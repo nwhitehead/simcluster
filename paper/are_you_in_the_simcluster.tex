@@ -35,7 +35,7 @@
 \maketitle
 
 \begin{abstract}
-You read the first paper~\cite{simcluster-paper}. You looked at the centrality tables. You didn't find your handle---or worse, you did, and now you can't stop thinking about what rank you were. This followup addresses the question the original analysis left dangling like a loose thread in a sweater you can't stop pulling: \textit{am I in the simcluster?} We present six operational definitions of community membership, ranked from the most exclusive (being one of the 14 crawl seeds) to the most generous (vibes), and a diagnostic framework that assigns any Bluesky user a composite \textbf{Simcluster Score} (0--100) based on their follow-graph proximity to known community seeds. Along the way we discuss the sociology of belonging~\cite{anderson1983, bauman2000}, the topology of imagined community~\cite{simmel1908}, the psychology of parasocial membership~\cite{horton1976}, and why the question ``am I in the simcluster?'' is simultaneously unanswerable and the only question worth asking. A companion diagnostic tool is available at \url{https://gitlab.samantha.wiki/clawgroup/simcluster-network-analysis}.
+You read the first paper~\cite{simcluster-paper}. You looked at the centrality tables. You didn't find your handle---or worse, you did, and now you can't stop thinking about what rank you were. This followup addresses the question the original analysis left dangling like a loose thread in a sweater you can't stop pulling: \textit{am I in the simcluster?} We present six operational definitions of community membership, ranked from the most exclusive (being one of the 14 crawl seeds) to the most generous (vibes), and a diagnostic framework that assigns any Bluesky user a composite \textbf{Simcluster Score} (0--100) based on their follow-graph proximity to known community seeds. Along the way we discuss the sociology of belonging~\cite{anderson1983, bauman2000}, the topology of imagined community~\cite{simmel1908}, the psychology of parasocial membership~\cite{horton1956}, and why the question ``am I in the simcluster?'' is simultaneously unanswerable and the only question worth asking. A companion diagnostic tool is available at \url{https://gitlab.samantha.wiki/clawgroup/simcluster-network-analysis}.
 \end{abstract}
 
 \section{Introduction: So You Read the Paper}
@@ -149,7 +149,7 @@ The reciprocity asymmetry creates a two-axis membership space:
     \item \textbf{Inward membership:} Simcluster accounts follow you. The community's attention flows toward you. You are a \textit{content source}.
 \end{enumerate}
 
-Most accounts in the dataset are audience members. They follow seeds and other visible accounts; the follow is not returned. This is the parasocial dynamic described by~\cite{horton1976}: a one-sided relationship in which one party invests emotional energy while the other is unaware of their existence.\footnote{Horton and Wohl were writing about television in 1956. They could not have imagined it would apply to a community named after a recommendation algorithm on a decentralized social protocol. But here we are.}
+Most accounts in the dataset are audience members. They follow seeds and other visible accounts; the follow is not returned. This is the parasocial dynamic described by~\cite{horton1956}: a one-sided relationship in which one party invests emotional energy while the other is unaware of their existence.\footnote{Horton and Wohl were writing about television in 1956. They could not have imagined it would apply to a community named after a recommendation algorithm on a decentralized social protocol. But here we are.}
 
 A small number of accounts achieve reciprocity: they follow and are followed by community members. These accounts have achieved what we might call \textbf{bidirectional membership}---recognition from the community they recognize. In a network with $\rho = 0.035$, this is rare and, frankly, validating.\footnote{Unless the reciprocal follow was automatic. Some accounts auto-follow-back. In which case your ``bidirectional membership'' is worth approximately as much as the email newsletter you didn't unsubscribe from.}
 
@@ -247,7 +247,7 @@ This is the impostor complex of network position: the gap between where you appe
     \item \textbf{Deflated position:} You are structurally important but don't appear so because the sample didn't capture your connections. Accounts on the periphery of the snowball sample may be bridges to unsampled communities that the crawl never reached.
 \end{itemize}
 
-The Dunning-Kruger effect~\cite{kruger1999}---whereby the incompetent overestimate their competence while the competent underestimate theirs---has a network analog. High-centrality nodes may not \textit{feel} central (they just follow accounts they find interesting). Low-centrality nodes may \textit{feel} central (they post constantly, engage with the right content, and identify strongly with the community). The network's assessment of your position and your own assessment may be almost entirely decorrelated.\footnote{The Spearman correlation between seed-proximity and centrality in the original analysis was $\rho = -0.20$ for betweenness~\cite{simcluster-paper}. The correlation between your self-assessment and your actual network position is, to our knowledge, unmeasured. We suspect it is not high.}
+The Dunning-Kruger effect~\cite{kruger1999}---whereby the incompetent overestimate their competence while the competent underestimate theirs---has a network analog. High-centrality nodes may not \textit{feel} central (they just follow accounts they find interesting). Low-centrality nodes may \textit{feel} central (they post constantly, engage with the right content, and identify strongly with the community). The network's assessment of your position and your own assessment may be almost entirely decorrelated.\footnote{The Spearman correlation between seed-proximity and centrality in the original analysis was $r_s = -0.20$ for betweenness~\cite{simcluster-paper}. The correlation between your self-assessment and your actual network position is, to our knowledge, unmeasured. We suspect it is not high.}
 
 The fundamental indeterminacy is this: your position in the graph depends on who started the crawl. A different set of 14 seeds would produce a different graph, different centrality rankings, and a different set of ``core'' accounts. The simcluster is real, but the map is contingent. You are not your betweenness centrality. You are not your PageRank. You are not your hop distance from a set of accounts chosen by one researcher on one day in May.\footnote{Unless you are a seed, in which case you literally are the starting point. Sorry.}
 
@@ -289,7 +289,7 @@ G.~Simmel.
 \newblock Duncker \& Humblot, Leipzig, 1908.
 \newblock [``The Stranger,'' trans.~D.~Levine, in \emph{The Sociology of Georg Simmel}, Free Press, 1971.]
 
-\bibitem{horton1976}
+\bibitem{horton1956}
 D.~Horton and R.~Wohl.
 \newblock Mass communication and para-social interaction: Observations on intimacy at a distance.
 \newblock \emph{Psychiatry}, 19(3):215--229, 1956.
