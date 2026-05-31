@@ -407,8 +407,8 @@ async function getAllFollows(did) {
     const params = { actor: did, limit: "100" };
     if (cursor) params.cursor = cursor;
     const data = await apiGet("app.bsky.graph.getFollows", params);
-    if (!data.follow || data.follow.length === 0) break;
-    for (const f of data.follow) follows.push(f.subject.did);
+    if (!data.follows || data.follows.length === 0) break;
+    for (const f of data.follows) follows.push(f.did);
     cursor = data.cursor;
     if (!cursor) break;
     await new Promise(r => setTimeout(r, 300));
@@ -484,7 +484,10 @@ function setConnList(containerId, names, isMutual) {
   const el = document.getElementById(containerId);
   el.innerHTML = "";
   if (names.length === 0) {
-    el.appendChild(makeTag("(none)", false));
+    const span = document.createElement("span");
+    span.className = "conn-tag";
+    span.textContent = "(none)";
+    el.appendChild(span);
   } else {
     names.forEach(n => el.appendChild(makeTag(n, isMutual || false)));
   }
