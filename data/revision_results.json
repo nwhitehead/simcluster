@@ -1,0 +1,658 @@
+{
+  "csn_powerlaw": {
+    "alpha": 3.0045753158291477,
+    "xmin": 6,
+    "n_tail": 762,
+    "ks": 0.1679790026246719,
+    "gof_p": 0.0,
+    "lr_vs_lognormal": 12.609170792149145,
+    "lr_p": 0.0,
+    "power_law_favored": "True",
+    "log_normal_favored": "False",
+    "conclusion": "power_law"
+  },
+  "seed_excluded_centrality": {
+    "seeds": [
+      "did:plc:2tqqxubv2lu4ahj35ysjer2r",
+      "did:plc:mssgex5rqek4wc66wgvzztbc",
+      "did:plc:mxzuau6m53jtdsbqe6f4laov",
+      "did:plc:nlqwj5q2hyaezkk2q6jmute5",
+      "did:plc:nvgmt4ujmtulykwfq4lrvnbb",
+      "did:plc:rm3vqkfbeyjeohvktei63dnq",
+      "did:plc:sna3qx44beg2mb5fao44gsxh",
+      "did:plc:wmyf3t5bsbxrclsysxipypsg"
+    ],
+    "n_seeds": 8,
+    "full": {
+      "betweenness": [
+        {
+          "handle": "prer.at",
+          "did": "did:plc:nlqwj5q2hyaezkk2q6jmute5",
+          "value": 0.0007919955758746603,
+          "is_seed": true
+        },
+        {
+          "handle": "norvid-studies.bsky.social",
+          "did": "did:plc:mssgex5rqek4wc66wgvzztbc",
+          "value": 0.0007880798718022778,
+          "is_seed": true
+        },
+        {
+          "handle": "samantha.wiki",
+          "did": "did:plc:sna3qx44beg2mb5fao44gsxh",
+          "value": 0.0007273248770774128,
+          "is_seed": true
+        },
+        {
+          "handle": "godoglyness.bsky.social",
+          "did": "did:plc:7qsdxoucnmbk4nctklqrzmdy",
+          "value": 0.0004995103329177629,
+          "is_seed": false
+        },
+        {
+          "handle": "dystopiabreaker.xyz",
+          "did": "did:plc:dimjrgeatypdz72m4okacmrt",
+          "value": 0.00043954697761198916,
+          "is_seed": false
+        },
+        {
+          "handle": "tachikoma.elsewhereunbound.com",
+          "did": "did:plc:mpdezz4nkre7vyift2rttggl",
+          "value": 0.00038655315916677957,
+          "is_seed": false
+        },
+        {
+          "handle": "cpaxton.bsky.social",
+          "did": "did:plc:tq6gqh5aaohgi55y2yofylwj",
+          "value": 0.00036268569859749595,
+          "is_seed": false
+        },
+        {
+          "handle": "temujin9.t9productions.com",
+          "did": "did:plc:wixdgg4ejykqrsoqgi7c2fk6",
+          "value": 0.0003320678170967093,
+          "is_seed": false
+        },
+        {
+          "handle": "tautologer.com",
+          "did": "did:plc:kef63ihhci7f5xhriu4asjhb",
+          "value": 0.0002920071867677861,
+          "is_seed": false
+        },
+        {
+          "handle": "sichulu.bsky.social",
+          "did": "did:plc:4asamrnnw6rzfq5sjzvmwgpe",
+          "value": 0.00025157004270114346,
+          "is_seed": false
+        },
+        {
+          "handle": "moultano.bsky.social",
+          "did": "did:plc:h25avmes6g7fgcddc3xj7qmg",
+          "value": 0.00024323681255178676,
+          "is_seed": false
+        },
+        {
+          "handle": "pavedwalden.bsky.social",
+          "did": "did:plc:uynpich2hsqmryyhr3moz5re",
+          "value": 0.00023634471358932406,
+          "is_seed": false
+        },
+        {
+          "handle": "astrra.space",
+          "did": "did:plc:nbfjoeficjzf3pejpontvril",
+          "value": 0.0002334832090208549,
+          "is_seed": false
+        },
+        {
+          "handle": "makeworld.space",
+          "did": "did:plc:2j2ounbiyi3ftihronlw5qhj",
+          "value": 0.00022683533905544886,
+          "is_seed": false
+        },
+        {
+          "handle": "sneptech.bsky.social",
+          "did": "did:plc:2p7a3z4uzfpoepv3aa36ykjq",
+          "value": 0.0002199498871590006,
+          "is_seed": false
+        }
+      ],
+      "eigenvector": [
+        {
+          "handle": "norvid-studies.bsky.social",
+          "did": "did:plc:mssgex5rqek4wc66wgvzztbc",
+          "value": 0.18056397833060756,
+          "is_seed": true
+        },
+        {
+          "handle": "abeliansoup.bsky.social",
+          "did": "did:plc:kbdtfnqrqpwwf62f6eekr7m2",
+          "value": 0.1678712207051745,
+          "is_seed": false
+        },
+        {
+          "handle": "vibe-coded.com",
+          "did": "did:plc:dxr2kibhxyzrvhsjz4uahpmg",
+          "value": 0.14859245836190493,
+          "is_seed": false
+        },
+        {
+          "handle": "vgel.me",
+          "did": "did:plc:zymiavmtif2rj5oklzyzslpu",
+          "value": 0.14539004050259527,
+          "is_seed": false
+        },
+        {
+          "handle": "godoglyness.bsky.social",
+          "did": "did:plc:7qsdxoucnmbk4nctklqrzmdy",
+          "value": 0.1397819422574632,
+          "is_seed": false
+        },
+        {
+          "handle": "carbonadoks.com",
+          "did": "did:plc:27u6urclrgh6uijeiqb2wcts",
+          "value": 0.13966103846450886,
+          "is_seed": false
+        },
+        {
+          "handle": "joshuashew.bsky.social",
+          "did": "did:plc:sfmur4r4wzriaupbgmz7sshy",
+          "value": 0.1380569013511699,
+          "is_seed": false
+        },
+        {
+          "handle": "isolyth.dev",
+          "did": "did:plc:allu5vs3gnm2wm7jzf4rad3r",
+          "value": 0.13078185855651142,
+          "is_seed": false
+        },
+        {
+          "handle": "minormobius.bsky.social",
+          "did": "did:plc:7zre4plmd5jllccww575j6sb",
+          "value": 0.12909884597967924,
+          "is_seed": false
+        },
+        {
+          "handle": "tautologer.com",
+          "did": "did:plc:kef63ihhci7f5xhriu4asjhb",
+          "value": 0.12893659647091676,
+          "is_seed": false
+        },
+        {
+          "handle": "dave.9000ish.uk",
+          "did": "did:plc:hovt6k22s64dq63jjmoyibk3",
+          "value": 0.1277190007522909,
+          "is_seed": false
+        },
+        {
+          "handle": "tbabb.bsky.social",
+          "did": "did:plc:zrwhncnqel7corjtg2cak3jx",
+          "value": 0.12674470708826208,
+          "is_seed": false
+        },
+        {
+          "handle": "medjed.bsky.social",
+          "did": "did:plc:njvjlnjfbvtm5zsnlztu2tx6",
+          "value": 0.1265712392603359,
+          "is_seed": false
+        },
+        {
+          "handle": "croissanthology.com",
+          "did": "did:plc:pjlhgjhb34k4zufrtbh2jyms",
+          "value": 0.1233129645025274,
+          "is_seed": false
+        },
+        {
+          "handle": "deepfates.com.deepfates.com.deepfates.com.deepfates.com.deepfates.com",
+          "did": "did:plc:7ti53c7iwv3poxnypw2tu3ck",
+          "value": 0.12202292402898285,
+          "is_seed": false
+        }
+      ],
+      "pagerank": [
+        {
+          "handle": "bsky.app",
+          "did": "did:plc:z72i7hdynmk6r22z27h6tvur",
+          "value": 0.0002263930553505283,
+          "is_seed": false
+        },
+        {
+          "handle": "cee.wtf",
+          "did": "did:plc:xb2urvqt5f4zzccjs46hysbf",
+          "value": 0.00013790619922164017,
+          "is_seed": false
+        },
+        {
+          "handle": "void.comind.network",
+          "did": "did:plc:mxzuau6m53jtdsbqe6f4laov",
+          "value": 0.00013540241175829845,
+          "is_seed": true
+        },
+        {
+          "handle": "norvid-studies.bsky.social",
+          "did": "did:plc:mssgex5rqek4wc66wgvzztbc",
+          "value": 0.00012431056328131412,
+          "is_seed": true
+        },
+        {
+          "handle": "did:plc:3lkkdiokwy7zqgjx",
+          "did": "did:plc:3lkkdiokwy7zqgjxvpb4x5lp",
+          "value": 0.00011689027785674506,
+          "is_seed": false
+        },
+        {
+          "handle": "did:plc:awabwf6slnjntbey",
+          "did": "did:plc:awabwf6slnjntbey4e7dbl4t",
+          "value": 0.00011689027785674506,
+          "is_seed": false
+        },
+        {
+          "handle": "did:plc:wdkvtbmowuyayjon",
+          "did": "did:plc:wdkvtbmowuyayjondxiowvfc",
+          "value": 0.00011689027785674506,
+          "is_seed": false
+        },
+        {
+          "handle": "did:plc:ewvi7nxzyoun6zhx",
+          "did": "did:plc:ewvi7nxzyoun6zhxrhs64oiz",
+          "value": 0.00011637557190204899,
+          "is_seed": false
+        },
+        {
+          "handle": "kira.pds.witchcraft.systems",
+          "did": "did:plc:2tqqxubv2lu4ahj35ysjer2r",
+          "value": 0.00011586111189192962,
+          "is_seed": true
+        },
+        {
+          "handle": "gracekind.net",
+          "did": "did:plc:p572wxnsuoogcrhlfrlizlrb",
+          "value": 0.00011582782066363636,
+          "is_seed": false
+        },
+        {
+          "handle": "astrra.space",
+          "did": "did:plc:nbfjoeficjzf3pejpontvril",
+          "value": 0.00011411082728067374,
+          "is_seed": false
+        },
+        {
+          "handle": "abeliansoup.bsky.social",
+          "did": "did:plc:kbdtfnqrqpwwf62f6eekr7m2",
+          "value": 0.0001133775976289409,
+          "is_seed": false
+        },
+        {
+          "handle": "cameron.stream",
+          "did": "did:plc:gfrmhdmjvxn2sjedzboeudef",
+          "value": 0.00011297815178151199,
+          "is_seed": false
+        },
+        {
+          "handle": "croissanthology.com",
+          "did": "did:plc:pjlhgjhb34k4zufrtbh2jyms",
+          "value": 0.00011263130048433868,
+          "is_seed": false
+        },
+        {
+          "handle": "timkellogg.me",
+          "did": "did:plc:ckaz32jwl6t2cno6fmuw2nhn",
+          "value": 0.00011029504308737654,
+          "is_seed": false
+        }
+      ]
+    },
+    "seed_excluded": {
+      "betweenness": [
+        {
+          "handle": "abeliansoup.bsky.social",
+          "did": "did:plc:kbdtfnqrqpwwf62f6eekr7m2",
+          "value": 0.00038392187709248936,
+          "is_seed": false
+        },
+        {
+          "handle": "moskov.goodventures.org",
+          "did": "did:plc:z7oad4td5k4tfb4dttzjym7r",
+          "value": 0.00033515165695196457,
+          "is_seed": false
+        },
+        {
+          "handle": "tbabb.bsky.social",
+          "did": "did:plc:zrwhncnqel7corjtg2cak3jx",
+          "value": 0.00033329030925356365,
+          "is_seed": false
+        },
+        {
+          "handle": "astrra.space",
+          "did": "did:plc:nbfjoeficjzf3pejpontvril",
+          "value": 0.00032676405360983505,
+          "is_seed": false
+        },
+        {
+          "handle": "godoglyness.bsky.social",
+          "did": "did:plc:7qsdxoucnmbk4nctklqrzmdy",
+          "value": 0.0003030296117240136,
+          "is_seed": false
+        },
+        {
+          "handle": "temujin9.t9productions.com",
+          "did": "did:plc:wixdgg4ejykqrsoqgi7c2fk6",
+          "value": 0.00030109604054416226,
+          "is_seed": false
+        },
+        {
+          "handle": "pretzelkins.bsky.social",
+          "did": "did:plc:jndloxiisfvplas7naztayko",
+          "value": 0.0002935340316983314,
+          "is_seed": false
+        },
+        {
+          "handle": "pavedwalden.bsky.social",
+          "did": "did:plc:uynpich2hsqmryyhr3moz5re",
+          "value": 0.0002869380672601021,
+          "is_seed": false
+        },
+        {
+          "handle": "tachikoma.elsewhereunbound.com",
+          "did": "did:plc:mpdezz4nkre7vyift2rttggl",
+          "value": 0.0002847665485984021,
+          "is_seed": false
+        },
+        {
+          "handle": "dystopiabreaker.xyz",
+          "did": "did:plc:dimjrgeatypdz72m4okacmrt",
+          "value": 0.00027469175701603593,
+          "is_seed": false
+        },
+        {
+          "handle": "why.bsky.team",
+          "did": "did:plc:vpkhqolt662uhesyj6nxm7ys",
+          "value": 0.00026077807307290545,
+          "is_seed": false
+        },
+        {
+          "handle": "cee.wtf",
+          "did": "did:plc:xb2urvqt5f4zzccjs46hysbf",
+          "value": 0.0002380755081563915,
+          "is_seed": false
+        },
+        {
+          "handle": "croissanthology.com",
+          "did": "did:plc:pjlhgjhb34k4zufrtbh2jyms",
+          "value": 0.00023559171721422784,
+          "is_seed": false
+        },
+        {
+          "handle": "hdevalence.bsky.social",
+          "did": "did:plc:2wco2e2ybeg2lwpfx3kqjsuv",
+          "value": 0.00022643205225866147,
+          "is_seed": false
+        },
+        {
+          "handle": "makeworld.space",
+          "did": "did:plc:2j2ounbiyi3ftihronlw5qhj",
+          "value": 0.00022232785513011836,
+          "is_seed": false
+        }
+      ],
+      "eigenvector": [
+        {
+          "handle": "abeliansoup.bsky.social",
+          "did": "did:plc:kbdtfnqrqpwwf62f6eekr7m2",
+          "value": 0.17325639340083046,
+          "is_seed": false
+        },
+        {
+          "handle": "vibe-coded.com",
+          "did": "did:plc:dxr2kibhxyzrvhsjz4uahpmg",
+          "value": 0.15382232008683447,
+          "is_seed": false
+        },
+        {
+          "handle": "vgel.me",
+          "did": "did:plc:zymiavmtif2rj5oklzyzslpu",
+          "value": 0.15245401828404437,
+          "is_seed": false
+        },
+        {
+          "handle": "carbonadoks.com",
+          "did": "did:plc:27u6urclrgh6uijeiqb2wcts",
+          "value": 0.14571126603788073,
+          "is_seed": false
+        },
+        {
+          "handle": "joshuashew.bsky.social",
+          "did": "did:plc:sfmur4r4wzriaupbgmz7sshy",
+          "value": 0.14497307608587134,
+          "is_seed": false
+        },
+        {
+          "handle": "godoglyness.bsky.social",
+          "did": "did:plc:7qsdxoucnmbk4nctklqrzmdy",
+          "value": 0.14494505182635176,
+          "is_seed": false
+        },
+        {
+          "handle": "isolyth.dev",
+          "did": "did:plc:allu5vs3gnm2wm7jzf4rad3r",
+          "value": 0.13762729787318603,
+          "is_seed": false
+        },
+        {
+          "handle": "tautologer.com",
+          "did": "did:plc:kef63ihhci7f5xhriu4asjhb",
+          "value": 0.1351544830128083,
+          "is_seed": false
+        },
+        {
+          "handle": "tbabb.bsky.social",
+          "did": "did:plc:zrwhncnqel7corjtg2cak3jx",
+          "value": 0.1330939255336978,
+          "is_seed": false
+        },
+        {
+          "handle": "minormobius.bsky.social",
+          "did": "did:plc:7zre4plmd5jllccww575j6sb",
+          "value": 0.13301423199798662,
+          "is_seed": false
+        },
+        {
+          "handle": "dave.9000ish.uk",
+          "did": "did:plc:hovt6k22s64dq63jjmoyibk3",
+          "value": 0.13281682026512434,
+          "is_seed": false
+        },
+        {
+          "handle": "medjed.bsky.social",
+          "did": "did:plc:njvjlnjfbvtm5zsnlztu2tx6",
+          "value": 0.12981805080618988,
+          "is_seed": false
+        },
+        {
+          "handle": "sneptech.bsky.social",
+          "did": "did:plc:2p7a3z4uzfpoepv3aa36ykjq",
+          "value": 0.12841349975545757,
+          "is_seed": false
+        },
+        {
+          "handle": "jefferyharrell.bsky.social",
+          "did": "did:plc:h6tcd37yr7vk33uuisbidqvw",
+          "value": 0.1272591869637983,
+          "is_seed": false
+        },
+        {
+          "handle": "croissanthology.com",
+          "did": "did:plc:pjlhgjhb34k4zufrtbh2jyms",
+          "value": 0.12720908124126346,
+          "is_seed": false
+        }
+      ],
+      "pagerank": [
+        {
+          "handle": "bsky.app",
+          "did": "did:plc:z72i7hdynmk6r22z27h6tvur",
+          "value": 0.0002271221288437231,
+          "is_seed": false
+        },
+        {
+          "handle": "cee.wtf",
+          "did": "did:plc:xb2urvqt5f4zzccjs46hysbf",
+          "value": 0.00013774014731701017,
+          "is_seed": false
+        },
+        {
+          "handle": "did:plc:ewvi7nxzyoun6zhx",
+          "did": "did:plc:ewvi7nxzyoun6zhxrhs64oiz",
+          "value": 0.00011900565493942042,
+          "is_seed": false
+        },
+        {
+          "handle": "did:plc:3lkkdiokwy7zqgjx",
+          "did": "did:plc:3lkkdiokwy7zqgjxvpb4x5lp",
+          "value": 0.00011703267188231354,
+          "is_seed": false
+        },
+        {
+          "handle": "did:plc:awabwf6slnjntbey",
+          "did": "did:plc:awabwf6slnjntbey4e7dbl4t",
+          "value": 0.00011703267188231354,
+          "is_seed": false
+        },
+        {
+          "handle": "did:plc:wdkvtbmowuyayjon",
+          "did": "did:plc:wdkvtbmowuyayjondxiowvfc",
+          "value": 0.00011703267188231354,
+          "is_seed": false
+        },
+        {
+          "handle": "astrra.space",
+          "did": "did:plc:nbfjoeficjzf3pejpontvril",
+          "value": 0.00011373886241930603,
+          "is_seed": false
+        },
+        {
+          "handle": "timkellogg.me",
+          "did": "did:plc:ckaz32jwl6t2cno6fmuw2nhn",
+          "value": 0.0001111791286688586,
+          "is_seed": false
+        },
+        {
+          "handle": "cameron.stream",
+          "did": "did:plc:gfrmhdmjvxn2sjedzboeudef",
+          "value": 0.00011056246914615278,
+          "is_seed": false
+        },
+        {
+          "handle": "vgel.me",
+          "did": "did:plc:zymiavmtif2rj5oklzyzslpu",
+          "value": 0.0001104351866981952,
+          "is_seed": false
+        },
+        {
+          "handle": "surf.social",
+          "did": "did:plc:34isotrs7rzjd3czk44hnkxh",
+          "value": 0.00010860544446092979,
+          "is_seed": false
+        },
+        {
+          "handle": "did:plc:eon2iu7v3x2ukgxk",
+          "did": "did:plc:eon2iu7v3x2ukgxkqaf7e5np",
+          "value": 0.00010748914669219821,
+          "is_seed": false
+        },
+        {
+          "handle": "did:plc:ry3hbexak5ytsum7",
+          "did": "did:plc:ry3hbexak5ytsum7aazhpkbv",
+          "value": 0.0001072293805112311,
+          "is_seed": false
+        },
+        {
+          "handle": "did:plc:xlclrlbyua2bbz6r",
+          "did": "did:plc:xlclrlbyua2bbz6rd5d4oq45",
+          "value": 0.00010664179140800041,
+          "is_seed": false
+        },
+        {
+          "handle": "imitationlearn.bsky.social",
+          "did": "did:plc:uvwxlxswy3tciwp24uwd7fpx",
+          "value": 0.00010602736824978943,
+          "is_seed": false
+        }
+      ]
+    }
+  },
+  "seed_proximity": {
+    "hop_distribution": {
+      "0": 8,
+      "1": 1852,
+      "2": 9055
+    },
+    "correlations": {
+      "betweenness": {
+        "n": 10907,
+        "spearman_r": -0.19712183261514304,
+        "spearman_p": 5.482409542365579e-96
+      },
+      "eigenvector": {
+        "n": 10907,
+        "spearman_r": -0.09507628343025602,
+        "spearman_p": 2.5003423489848018e-23
+      },
+      "pagerank": {
+        "n": 10907,
+        "spearman_r": -0.1384062423053671,
+        "spearman_p": 8.668076188264169e-48
+      }
+    },
+    "nodes_mapped": 10915,
+    "fraction_mapped": 1.0
+  },
+  "reciprocity_sensitivity": {
+    "full_graph": {
+      "reciprocity": 0.03452582746007672,
+      "n_edges": 22418
+    },
+    "neither_truncated": {
+      "reciprocity": 0.02369077306733167,
+      "n_edges": 3208,
+      "n_truncated_skipped": 150
+    },
+    "source_not_truncated": {
+      "reciprocity": 0.01953727506426735,
+      "n_edges": 3890
+    },
+    "lower_bound": 0.03452582746007672,
+    "upper_bound": 0.02369077306733167
+  },
+  "handle_resolution_bias": {
+    "resolved": {
+      "degree": {
+        "n": 596,
+        "mean_in_deg": 12.394295302013424,
+        "mean_out_deg": 37.61409395973154,
+        "median_in_deg": 10.0
+      },
+      "hop": {
+        "n": 596,
+        "mean_hop": 1.332214765100671,
+        "fraction_reachable": 1.0,
+        "seed_fraction": 0.013422818791946308
+      },
+      "n": 596
+    },
+    "unresolved": {
+      "degree": {
+        "n": 10319,
+        "mean_in_deg": 1.4566333947087897,
+        "mean_out_deg": 0.0,
+        "median_in_deg": 1.0
+      },
+      "hop": {
+        "n": 10319,
+        "mean_hop": 1.857544335691443,
+        "fraction_reachable": 1.0,
+        "seed_fraction": 0.0
+      },
+      "n": 10319
+    }
+  }
+}

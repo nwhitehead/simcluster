@@ -1,0 +1,23 @@
+{
+  "n_nodes": 10915,
+  "n_edges": 22418,
+  "density": 0.00018818680776731857,
+  "reciprocity": 0.03452582746007672,
+  "mean_clustering": 0.13120878205865835,
+  "assortativity": -0.0897973968695475,
+  "n_wcc": 1,
+  "largest_wcc_frac": 1.0,
+  "n_scc": 10829,
+  "largest_scc_frac": 0.007970682546953734,
+  "mean_in_deg": 2.053870819972515,
+  "mean_out_deg": 2.053870819972515,
+  "max_in_deg": 46,
+  "max_out_deg": 500,
+  "powerlaw_alpha": 2.498273455634415,
+  "powerlaw_kmin": 1,
+  "n_communities": 26,
+  "largest_community_frac": 0.13568483737975262,
+  "modularity": 0.5346044406777851,
+  "max_core": 24,
+  "n_cores": 24
+}

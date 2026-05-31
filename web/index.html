@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Are You in the Simcluster?</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --seed: #a371f7;
+    --core: #58a6ff;
+    --adjacent: #3fb950;
+    --peripheral: #d29922;
+    --curious: #8b949e;
+    --outside: #484f58;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem;
+    line-height: 1.6;
+  }
+
+  .container { max-width: 680px; margin: 0 auto; }
+
+  h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    color: #f0f6fc;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+  }
+
+  .input-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus { border-color: var(--accent); }
+
+  button {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 6px;
+    padding: 0.75rem 1.5rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+
+  button:hover { opacity: 0.85; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .status {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    min-height: 1.5em;
+  }
+
+  .status.error { color: #f85149; }
+
+  #results { display: none; }
+
+  .score-display {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .score-number {
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .score-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+
+  .tier-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .breakdown {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .breakdown h3 {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+
+  .breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .breakdown-row:last-child { border-bottom: none; }
+
+  .breakdown-label { font-size: 0.85rem; }
+  .breakdown-value { font-weight: 600; font-size: 0.85rem; }
+
+  .breakdown-bar {
+    width: 100px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    margin: 0 1rem;
+    flex-shrink: 0;
+  }
+
+  .breakdown-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--accent);
+    transition: width 0.5s ease;
+  }
+
+  .connections {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .connections h3 {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+
+  .conn-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+  }
+
+  .conn-tag {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    color: var(--text);
+  }
+
+  .conn-tag.mutual {
+    border-color: var(--adjacent);
+    color: var(--adjacent);
+  }
+
+  .diagnosis {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .disclaimer {
+    font-size: 0.75rem;
+    color: var(--outside);
+    text-align: center;
+    margin-top: 2rem;
+    line-height: 1.5;
+  }
+
+  .tier-seed .score-number, .tier-seed .tier-name { color: var(--seed); }
+  .tier-core .score-number, .tier-core .tier-name { color: var(--core); }
+  .tier-adjacent .score-number, .tier-adjacent .tier-name { color: var(--adjacent); }
+  .tier-peripheral .score-number, .tier-peripheral .tier-name { color: var(--peripheral); }
+  .tier-curious .score-number, .tier-curious .tier-name { color: var(--curious); }
+  .tier-outside .score-number, .tier-outside .tier-name { color: var(--outside); }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Are You in the Simcluster?</h1>
+  <p class="subtitle">A diagnostic, philosophical, and mildly uncomfortable guide to network membership.</p>
+
+  <div class="input-section">
+    <label for="handle">Enter your Bluesky handle</label>
+    <div class="input-row">
+      <input type="text" id="handle" placeholder="e.g. abeliansoup.bsky.social" spellcheck="false" autocomplete="off">
+      <button id="checkBtn" onclick="checkMembership()">Check</button>
+    </div>
+    <div id="status" class="status"></div>
+  </div>
+
+  <div id="results">
+    <div id="scoreDisplay" class="score-display">
+      <div class="score-label">Simcluster Score</div>
+      <div id="scoreNumber" class="score-number">--</div>
+      <div id="scoreOf" style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.5rem;">out of 100</div>
+      <div id="tierName" class="tier-name">--</div>
+    </div>
+
+    <div class="breakdown">
+      <h3>Score Breakdown</h3>
+      <div class="breakdown-row">
+        <span class="breakdown-label">Seed following</span>
+        <div class="breakdown-bar"><div id="barFollowing" class="breakdown-bar-fill"></div></div>
+        <span id="valFollowing" class="breakdown-value">0/30</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">Seed followership</span>
+        <div class="breakdown-bar"><div id="barFollowership" class="breakdown-bar-fill"></div></div>
+        <span id="valFollowership" class="breakdown-value">0/30</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">Reciprocal connects</span>
+        <div class="breakdown-bar"><div id="barReciprocal" class="breakdown-bar-fill"></div></div>
+        <span id="valReciprocal" class="breakdown-value">0/20</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">Hub proximity</span>
+        <div class="breakdown-bar"><div id="barHub" class="breakdown-bar-fill"></div></div>
+        <span id="valHub" class="breakdown-value">0/20</span>
+      </div>
+    </div>
+
+    <div class="connections">
+      <h3>Seeds You Follow</h3>
+      <div id="seedsFollowed" class="conn-list"><span class="conn-tag">(none)</span></div>
+    </div>
+
+    <div class="connections">
+      <h3>Seeds Following You</h3>
+      <div id="seedsFollowingYou" class="conn-list"><span class="conn-tag">(none)</span></div>
+    </div>
+
+    <div id="mutualSection" class="connections" style="display:none;">
+      <h3>Mutual Connections</h3>
+      <div id="mutualSeeds" class="conn-list"></div>
+    </div>
+
+    <div id="diagnosisBox" class="diagnosis"></div>
+
+    <p class="disclaimer">
+      Your score is a function of who started the crawl, not who you are.<br>
+      The map is not the territory. The simcluster is liquid. So are you.<br><br>
+      Based on <a href="https://gitlab.samantha.wiki/clawgroup/simcluster-network-analysis" style="color:var(--accent)">The Simcluster: Network Analysis of an Emergent Subculture on Bluesky</a>.
+    </p>
+  </div>
+</div>
+
+<script>
+const SEEDS = [
+  "abeliansoup.bsky.social",
+  "solarapparition.bsky.social",
+  "prer.at",
+  "movail.bsky.social",
+  "yielding.bsky.social",
+  "ganweaving.bsky.social",
+  "simcluster.social",
+  "samantha.wiki",
+  "clamclaw.pds.samantha.wiki",
+  "norvid-studies.bsky.social",
+  "void.comind.network",
+  "kira.pds.witchcraft.systems",
+  "seasaltshrimp.bsky.social",
+  "ai.bsky.art",
+];
+
+const HUBS = [
+  "vibe-coded.com",
+  "vgel.me",
+  "cee.wtf",
+  "carbonadoks.com",
+  "joshuashew.bsky.social",
+  "godoglyness.bsky.social",
+  "tbabb.bsky.social",
+  "croissanthology.com",
+  "astrra.space",
+  "isolyth.dev",
+  "tautologer.com",
+  "moskov.goodventures.org",
+  "minormobius.bsky.social",
+  "dave.9000ish.uk",
+];
+
+const API = "https://public.api.bsky.app/xrpc";
+
+const TIER_META = {
+  100: { name: "SEED / INNER CORE", cls: "tier-seed", commentary: "You are the simcluster. The crawl started from you (or someone very close to you). Your betweenness centrality may or may not be a sampling artifact. Try not to think about it." },
+  80:  { name: "SEED / INNER CORE", cls: "tier-seed", commentary: "You are the simcluster. The crawl started from you (or someone very close to you). Your betweenness centrality may or may not be a sampling artifact. Try not to think about it." },
+  60:  { name: "CORE", cls: "tier-core", commentary: "You're card-carrying. Multiple seeds follow you. You show up in the centrality tables. You probably already knew this, which raises the question: why are you running this tool?" },
+  40:  { name: "ADJACENT", cls: "tier-adjacent", commentary: "You're in, but not center stage. You follow enough seeds to be structurally connected. Whether the feeling is mutual is between you and the reciprocity statistics." },
+  20:  { name: "PERIPHERAL", cls: "tier-peripheral", commentary: "You're on the outskirts. You know someone who knows someone. In a network with 3.5% reciprocity, you are the 96.5%." },
+  1:   { name: "CURIOUS", cls: "tier-curious", commentary: "You're simcluster-curious. Barely. You might have followed one seed by accident. The vibes criterion awaits." },
+  0:   { name: "OUTSIDE", cls: "tier-outside", commentary: "No detectable connection to the simcluster. This does not mean you are not in the simcluster. It means the follow graph doesn't show it. The vibes criterion is always available." },
+};
+
+function getTier(score) {
+  if (score >= 80) return TIER_META[100];
+  if (score >= 60) return TIER_META[60];
+  if (score >= 40) return TIER_META[40];
+  if (score >= 20) return TIER_META[20];
+  if (score >= 1) return TIER_META[1];
+  return TIER_META[0];
+}
+
+async function apiGet(endpoint, params) {
+  const url = new URL(`${API}/${endpoint}`);
+  if (params) Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`${r.status}`);
+  return r.json();
+}
+
+function setStatus(msg, isError) {
+  const el = document.getElementById("status");
+  el.textContent = msg;
+  el.className = "status" + (isError ? " error" : "");
+}
+
+async function resolveHandle(handle) {
+  const data = await apiGet("com.atproto.identity.resolveHandle", { handle });
+  return data.did;
+}
+
+async function getProfile(actor) {
+  return apiGet("app.bsky.actor.getProfile", { actor });
+}
+
+async function getAllFollows(did) {
+  const follows = [];
+  let cursor = null;
+  while (follows.length < 500) {
+    const params = { actor: did, limit: "100" };
+    if (cursor) params.cursor = cursor;
+    const data = await apiGet("app.bsky.graph.getFollows", params);
+    if (!data.follow || data.follow.length === 0) break;
+    for (const f of data.follow) follows.push(f.subject.did);
+    cursor = data.cursor;
+    if (!cursor) break;
+    await new Promise(r => setTimeout(r, 300));
+  }
+  return follows;
+}
+
+async function getAllFollowers(did) {
+  const followers = [];
+  let cursor = null;
+  while (followers.length < 500) {
+    const params = { actor: did, limit: "100" };
+    if (cursor) params.cursor = cursor;
+    const data = await apiGet("app.bsky.graph.getFollowers", params);
+    if (!data.followers || data.followers.length === 0) break;
+    for (const f of data.followers) followers.push(f);
+    cursor = data.cursor;
+    if (!cursor) break;
+    await new Promise(r => setTimeout(r, 300));
+  }
+  return followers;
+}
+
+async function resolveMany(handles) {
+  const dids = {};
+  const promises = handles.map(async (h) => {
+    try {
+      const did = await resolveHandle(h);
+      dids[did] = h;
+    } catch (e) { }
+  });
+  await Promise.all(promises);
+  return dids;
+}
+
+function scoreSeedFollowing(n) {
+  if (n >= 8) return 30;
+  if (n >= 5) return 25;
+  if (n >= 3) return 20;
+  if (n >= 2) return 12;
+  if (n >= 1) return 5;
+  return 0;
+}
+
+function scoreSeedFollowership(n) {
+  if (n >= 3) return 30;
+  if (n >= 2) return 20;
+  if (n >= 1) return 10;
+  return 0;
+}
+
+function scoreReciprocal(n) {
+  if (n >= 3) return 20;
+  if (n >= 2) return 15;
+  if (n >= 1) return 8;
+  return 0;
+}
+
+function scoreHubProximity(n) {
+  if (n >= 3) return 20;
+  if (n >= 1) return 10;
+  return 0;
+}
+
+function makeTag(name, isMutual) {
+  const span = document.createElement("span");
+  span.className = "conn-tag" + (isMutual ? " mutual" : "");
+  span.textContent = "@" + name;
+  return span;
+}
+
+function setConnList(containerId, names, isMutual) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = "";
+  if (names.length === 0) {
+    el.appendChild(makeTag("(none)", false));
+  } else {
+    names.forEach(n => el.appendChild(makeTag(n, isMutual || false)));
+  }
+}
+
+async function checkMembership() {
+  const input = document.getElementById("handle").value.trim().replace(/^@/, "");
+  if (!input) { setStatus("Please enter a handle.", true); return; }
+
+  const btn = document.getElementById("checkBtn");
+  btn.disabled = true;
+  document.getElementById("results").style.display = "none";
+
+  try {
+    setStatus("Resolving handle...");
+    const did = await resolveHandle(input);
+
+    setStatus("Fetching profile...");
+    const profile = await getProfile(did);
+
+    setStatus("Resolving seed accounts...");
+    const seedDids = await resolveMany(SEEDS);
+
+    setStatus("Resolving hub accounts...");
+    const hubDids = await resolveMany(HUBS.filter(h => !SEEDS.includes(h)));
+
+    setStatus("Fetching your follows (this may take a moment)...");
+    const userFollows = await getAllFollows(did);
+    const userFollowsSet = new Set(userFollows);
+
+    setStatus("Fetching your followers...");
+    const userFollowersRaw = await getAllFollowers(did);
+    const userFollowersSet = new Set(userFollowersRaw.map(f => f.did));
+
+    const seedDidSet = new Set(Object.keys(seedDids));
+    const hubDidSet = new Set(Object.keys(hubDids));
+
+    const seedsFollowed = [...seedDidSet].filter(d => userFollowsSet.has(d));
+    const seedsFollowingYou = [...seedDidSet].filter(d => userFollowersSet.has(d));
+    const reciprocalSeeds = seedsFollowed.filter(d => seedsFollowingYou.includes(d));
+    const hubsFollowed = [...hubDidSet].filter(d => userFollowsSet.has(d));
+
+    const sF = scoreSeedFollowing(seedsFollowed.length);
+    const sR = scoreSeedFollowership(seedsFollowingYou.length);
+    const sM = scoreReciprocal(reciprocalSeeds.length);
+    const sH = scoreHubProximity(hubsFollowed.length);
+    const total = sF + sR + sM + sH;
+
+    const tier = getTier(total);
+
+    document.getElementById("scoreDisplay").className = "score-display " + tier.cls;
+    document.getElementById("scoreNumber").textContent = total;
+    document.getElementById("tierName").textContent = tier.name;
+
+    document.getElementById("valFollowing").textContent = `${sF}/30`;
+    document.getElementById("barFollowing").style.width = `${(sF / 30) * 100}%`;
+
+    document.getElementById("valFollowership").textContent = `${sR}/30`;
+    document.getElementById("barFollowership").style.width = `${(sR / 30) * 100}%`;
+
+    document.getElementById("valReciprocal").textContent = `${sM}/20`;
+    document.getElementById("barReciprocal").style.width = `${(sM / 20) * 100}%`;
+
+    document.getElementById("valHub").textContent = `${sH}/20`;
+    document.getElementById("barHub").style.width = `${(sH / 20) * 100}%`;
+
+    setConnList("seedsFollowed", seedsFollowed.map(d => seedDids[d] || d.slice(0, 20)));
+    setConnList("seedsFollowingYou", seedsFollowingYou.map(d => seedDids[d] || d.slice(0, 20)));
+
+    const mutualSection = document.getElementById("mutualSection");
+    if (reciprocalSeeds.length > 0) {
+      mutualSection.style.display = "block";
+      setConnList("mutualSeeds", reciprocalSeeds.map(d => seedDids[d] || d.slice(0, 20)), true);
+    } else {
+      mutualSection.style.display = "none";
+    }
+
+    document.getElementById("diagnosisBox").textContent = tier.commentary;
+
+    document.getElementById("results").style.display = "block";
+    setStatus("");
+
+  } catch (e) {
+    setStatus("Error: " + (e.message || "Could not resolve handle. Is it a valid Bluesky account?"), true);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+document.getElementById("handle").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") checkMembership();
+});
+</script>
+</body>
+</html>
