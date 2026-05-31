@@ -4,7 +4,9 @@ Network analysis of the Bluesky "simcluster" community — an emergent subcultur
 
 ## Papers
 
-### [The Simcluster: Network Analysis of an Emergent Subculture on Bluesky](paper/simcluster_paper.pdf)
+### The Simcluster: Network Analysis of an Emergent Subculture on Bluesky
+
+[simcluster_paper.pdf](paper/simcluster_paper.pdf)
 
 The original analysis (~7 pages, 8 figures). See [`paper/simcluster_paper.tex`](paper/simcluster_paper.tex) for the LaTeX source. The paper:
 
@@ -12,7 +14,9 @@ The original analysis (~7 pages, 8 figures). See [`paper/simcluster_paper.tex`](
 - Tests 5 hypotheses about network structure (scale-free, core-periphery, low reciprocity, multi-hub communities, disassortative mixing)
 - Presents comprehensive network metrics on 10,915 nodes and 22,418 edges
 
-### [Are You in the Simcluster?](paper/are_you_in_the_simcluster.pdf)
+### Are You in the Simcluster?
+
+[are_you_in_the_simcluster.pdf](paper/are_you_in_the_simcluster.pdf)
 
 A companion paper (~9 pages, 3 figures) addressing the question the original analysis left dangling: *am I in the simcluster?* See [`paper/are_you_in_the_simcluster.tex`](paper/are_you_in_the_simcluster.tex) for the LaTeX source. The paper:
 
