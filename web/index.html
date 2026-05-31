@@ -405,7 +405,7 @@ async function getProfile(actor) {
 async function getAllFollows(did) {
   const follows = [];
   let cursor = null;
-  while (follows.length < 500) {
+  while (true) {
     const params = { actor: did, limit: "100" };
     if (cursor) params.cursor = cursor;
     const data = await apiGet("app.bsky.graph.getFollows", params);
@@ -437,13 +437,32 @@ async function getAllFollowers(did) {
 async function resolveMany(handles) {
   const dids = {};
   const promises = handles.map(async (h) => {
-    try {
-      const did = await resolveHandle(h);
-      dids[did] = h;
-    } catch (e) { }
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const did = await resolveHandle(h);
+        dids[did] = h;
+        return;
+      } catch (e) {
+        if (attempt < 2) await new Promise(r => setTimeout(r, 500));
+      }
+    }
   });
   await Promise.all(promises);
   return dids;
+}
+
+async function doesFollow(actorDid, targetDid) {
+  let cursor = null;
+  while (true) {
+    const params = { actor: actorDid, limit: "100" };
+    if (cursor) params.cursor = cursor;
+    const data = await apiGet("app.bsky.graph.getFollows", params);
+    if (!data.follows || data.follows.length === 0) return false;
+    if (data.follows.some(f => f.did === targetDid)) return true;
+    cursor = data.cursor;
+    if (!cursor) return false;
+    await new Promise(r => setTimeout(r, 300));
+  }
 }
 
 function scoreSeedFollowing(n) {
@@ -520,15 +539,18 @@ async function checkMembership() {
     const userFollows = await getAllFollows(did);
     const userFollowsSet = new Set(userFollows);
 
-    setStatus("Fetching your followers...");
-    const userFollowersRaw = await getAllFollowers(did);
-    const userFollowersSet = new Set(userFollowersRaw.map(f => f.did));
-
     const seedDidSet = new Set(Object.keys(seedDids));
     const hubDidSet = new Set(Object.keys(hubDids));
 
     const seedsFollowed = [...seedDidSet].filter(d => userFollowsSet.has(d));
-    const seedsFollowingYou = [...seedDidSet].filter(d => userFollowersSet.has(d));
+
+    setStatus("Checking which seeds follow you...");
+    const seedsFollowingYou = [];
+    for (const seedDid of Object.keys(seedDids)) {
+      if (await doesFollow(seedDid, did)) {
+        seedsFollowingYou.push(seedDid);
+      }
+    }
     const reciprocalSeeds = seedsFollowed.filter(d => seedsFollowingYou.includes(d));
     const hubsFollowed = [...hubDidSet].filter(d => userFollowsSet.has(d));
 
