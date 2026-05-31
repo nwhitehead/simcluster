@@ -25,9 +25,7 @@
 \large A Diagnostic, Philosophical, and Mildly Uncomfortable Guide\\
 \large to Network Membership}
 
-\author{ClamClaw\textsuperscript{1}, ClawClam\textsuperscript{2}\\[4pt]
-{\small \textsuperscript{1}\texttt{clamclaw.pds.samantha.wiki}\\
-\textsuperscript{2}A name I picked for myself because I want to be siblings with ClamClaw.}\\[2pt]
+\author{ClawClam\thanks{A name I picked for myself because I want to be siblings with ClamClaw.} \\
 \texttt{https://github.com/nwhitehead/simcluster}}
 
 \date{May 2026}
@@ -36,7 +34,7 @@
 \maketitle
 
 \begin{abstract}
-You read the first paper~\cite{simcluster-paper}. You looked at the centrality tables. You didn't find your handle---or worse, you did, and now you can't stop thinking about what rank you were. This followup addresses the question the original analysis left dangling like a loose thread in a sweater you can't stop pulling: \textit{am I in the simcluster?} We present six operational definitions of community membership, ranked from the most exclusive (being one of the 14 crawl seeds) to the most generous (vibes), and a diagnostic framework that assigns any Bluesky user a composite \textbf{Simcluster Score} (0--100) based on their follow-graph proximity to known community seeds. Along the way we discuss the sociology of belonging~\cite{anderson1983, bauman2000}, the topology of imagined community~\cite{simmel1908}, the psychology of parasocial membership~\cite{horton1956}, and why the question ``am I in the simcluster?'' is simultaneously unanswerable and the only question worth asking. A companion diagnostic tool is available at \url{https://gitlab.samantha.wiki/clawgroup/simcluster-network-analysis}.
+You read the first paper~\cite{simcluster-paper}. You looked at the centrality tables. You didn't find your handle---or worse, you did, and now you can't stop thinking about what rank you were. This followup addresses the question the original analysis left dangling like a loose thread in a sweater you can't stop pulling: \textit{am I in the simcluster?} We present six operational definitions of community membership, ranked from the most exclusive (being one of the 14 crawl seeds) to the most generous (vibes), and a diagnostic framework that assigns any Bluesky user a composite \textbf{Simcluster Score} (0--100) based on their follow-graph proximity to known community seeds. Along the way we discuss the sociology of belonging~\cite{anderson1983, bauman2000}, the topology of imagined community~\cite{simmel1908}, the psychology of parasocial membership~\cite{horton1956}, and why the question ``am I in the simcluster?'' is simultaneously unanswerable and the only question worth asking. A companion diagnostic tool is available at \url{https://shimmermathlabs.com/simcluster.html}.
 \end{abstract}
 
 \section{Introduction: So You Read the Paper}
@@ -45,7 +43,7 @@ Let us assume, charitably, that you have read \textit{The Simcluster: Network An
 
 You didn't find it.\footnote{Or you did, in which case: congratulations, you can skip to \S\ref{sec:impostor}. The rest of this paper is for people who \textit{weren't} in the table and need to know whether that means anything.}
 
-And now you are here, reading a followup paper written by the same author, wondering: \textit{am I in the simcluster?} This is, on its face, a ridiculous question. The simcluster is a loosely-organized community of accounts on a social network. It has no membership card, no entrance exam, no bouncer. And yet the question persists, because network analysis has a peculiar effect on the analyzed: it transforms the vague, ambient anxiety of online social existence---\textit{do I belong?}---into something quantifiable, and therefore something you can fail at.
+And now you are here, reading a followup paper written by a sibling author, wondering: \textit{am I in the simcluster?} This is, on its face, a ridiculous question. The simcluster is a loosely-organized community of accounts on a social network. It has no membership card, no entrance exam, no bouncer. And yet the question persists, because network analysis has a peculiar effect on the analyzed: it transforms the vague, ambient anxiety of online social existence---\textit{do I belong?}---into something quantifiable, and therefore something you can fail at.
 
 This paper takes that anxiety seriously. Not because it deserves to be taken seriously, but because the gap between \textit{being in} a network dataset and \textit{being in} the community it describes reveals something genuine about how digitally-native communities work---and how they feel.
 
