@@ -110,8 +110,7 @@ class SharedBackoff:
 
     def check_wait(self):
         with self.lock:
-            if time.monotonic() < self.paused_until:
-                wait = self.paused_until - time.monotonic()
+            wait = max(0.0, self.paused_until - time.monotonic())
         if wait > 0:
             time.sleep(wait)
 
@@ -213,7 +212,13 @@ def api_request(url: str, rate_limiter: RateLimiter, backoff: SharedBackoff,
                 return None, "bad_json"
 
         if status == 429:
-            wait_secs = float(retry_after) if retry_after else 60.0
+            if retry_after:
+                try:
+                    wait_secs = float(retry_after)
+                except ValueError:
+                    wait_secs = 60.0
+            else:
+                wait_secs = 60.0
             wait_secs = min(wait_secs * (2 ** attempt), 300)
             backoff.signal_backoff(wait_secs)
             continue
@@ -399,7 +404,7 @@ def phase_profile(conn: sqlite3.Connection, args):
 
     stop_event = threading.Event()
     reporter = ProgressReporter("profile")
-    active_workers = threading.atomic = [0]
+    active_workers = [0]
     active_lock = threading.Lock()
 
     def worker():
@@ -425,7 +430,7 @@ def phase_profile(conn: sqlite3.Connection, args):
 
                 if data is not None:
                     profiles = {}
-                    for p in data:
+                    for p in data.get("profiles", []):
                         did = p.get("did", "")
                         profiles[did] = p
 
@@ -683,6 +688,8 @@ def phase_crawl_follows(conn: sqlite3.Connection, args):
 
     edge_batch = []
     ghost_batch = []
+    done_batch = []
+    error_batch = []
     done_actors = 0
     total_edges = 0
     last_batch_report = 0
@@ -703,15 +710,9 @@ def phase_crawl_follows(conn: sqlite3.Connection, args):
             if "error" in payload:
                 err = payload["error"]
                 if err == "deleted":
-                    conn.execute(
-                        "UPDATE actors SET follows_crawled=1, last_error=? WHERE did=?",
-                        (err, did),
-                    )
+                    done_batch.append((err, did))
                 else:
-                    conn.execute(
-                        "UPDATE actors SET error_count=error_count+1, last_error=? WHERE did=?",
-                        (err, did),
-                    )
+                    error_batch.append((err, did))
                     reporter.add_error(err)
             else:
                 edges = payload.get("edges", [])
@@ -719,16 +720,13 @@ def phase_crawl_follows(conn: sqlite3.Connection, args):
                     edge_batch.append((follower_did, followee_did))
                     ghost_batch.append((followee_did,))
 
-                conn.execute(
-                    "UPDATE actors SET follows_crawled=1 WHERE did=?", (did,)
-                )
+                done_batch.append((None, did))
                 total_edges += len(edges)
 
-            flush_size = BATCH_COMMIT_SIZE
-            if len(edge_batch) >= flush_size:
-                _flush_follow_batch(conn, edge_batch, ghost_batch)
+            if len(edge_batch) >= BATCH_COMMIT_SIZE or len(done_batch) >= BATCH_COMMIT_SIZE:
+                _flush_follow_batch(conn, edge_batch, ghost_batch, done_batch, error_batch)
                 reporter.add_rows(total_edges)
-                if total_edges - last_batch_report >= flush_size:
+                if total_edges - last_batch_report >= BATCH_COMMIT_SIZE:
                     print(
                         f"  [batch] {done_actors:,} actors done, {total_edges:,} edges",
                         file=sys.stderr,
@@ -736,13 +734,15 @@ def phase_crawl_follows(conn: sqlite3.Connection, args):
                     last_batch_report = total_edges
                 edge_batch = []
                 ghost_batch = []
+                done_batch = []
+                error_batch = []
 
     except KeyboardInterrupt:
         print("\n  Interrupted, saving progress...", file=sys.stderr)
         stop_event.set()
 
-    if edge_batch or ghost_batch:
-        _flush_follow_batch(conn, edge_batch, ghost_batch)
+    if edge_batch or ghost_batch or done_batch or error_batch:
+        _flush_follow_batch(conn, edge_batch, ghost_batch, done_batch, error_batch)
     reporter.add_rows(total_edges)
 
     stop_event.set()
@@ -760,7 +760,7 @@ def phase_crawl_follows(conn: sqlite3.Connection, args):
     print(f"  Total edges: {edge_count:,}", file=sys.stderr)
 
 
-def _flush_follow_batch(conn, edge_batch, ghost_batch):
+def _flush_follow_batch(conn, edge_batch, ghost_batch, done_batch, error_batch):
     if ghost_batch:
         conn.executemany(
             "INSERT OR IGNORE INTO actors (did, is_active) VALUES (?, 0)",
@@ -770,6 +770,16 @@ def _flush_follow_batch(conn, edge_batch, ghost_batch):
         conn.executemany(
             "INSERT OR IGNORE INTO follows (follower_did, followee_did) VALUES (?, ?)",
             edge_batch,
+        )
+    if done_batch:
+        conn.executemany(
+            "UPDATE actors SET follows_crawled=1, last_error=COALESCE(?, last_error) WHERE did=?",
+            done_batch,
+        )
+    for err, did in error_batch:
+        conn.execute(
+            "UPDATE actors SET error_count=error_count+1, last_error=? WHERE did=?",
+            (err, did),
         )
     conn.execute("PRAGMA wal_checkpoint(PASSIVE)")
     conn.commit()
