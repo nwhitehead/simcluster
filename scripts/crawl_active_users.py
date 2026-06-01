@@ -462,6 +462,12 @@ def phase_profile(conn: sqlite3.Connection, args):
 
     did_queue = queue.Queue(maxsize=100_000)
 
+    workers = []
+    for _ in range(args.workers):
+        t = threading.Thread(target=worker, daemon=True)
+        t.start()
+        workers.append(t)
+
     cursor_offset = 0
     batch_size_dids = 5000
     while not stop_event.is_set():
@@ -477,12 +483,6 @@ def phase_profile(conn: sqlite3.Connection, args):
             did_queue.put(d)
         cursor_offset += batch_size_dids
 
-    workers = []
-    for _ in range(args.workers):
-        t = threading.Thread(target=worker, daemon=True)
-        t.start()
-        workers.append(t)
-
     def get_q_depth():
         return result_queue.qsize()
 
@@ -493,6 +493,7 @@ def phase_profile(conn: sqlite3.Connection, args):
     reporter.start(get_q_depth, get_active)
 
     committed = 0
+    last_reported = 0
     profile_batch = []
     error_batch = []
 
@@ -533,7 +534,8 @@ def phase_profile(conn: sqlite3.Connection, args):
 
             if len(profile_batch) + len(error_batch) >= BATCH_COMMIT_SIZE:
                 _flush_profile_batch(conn, profile_batch, error_batch, reporter)
-                reporter.add_rows(committed)
+                reporter.add_rows(committed - last_reported)
+                last_reported = committed
                 profile_batch = []
                 error_batch = []
 
@@ -543,7 +545,7 @@ def phase_profile(conn: sqlite3.Connection, args):
 
     if profile_batch or error_batch:
         _flush_profile_batch(conn, profile_batch, error_batch, reporter)
-    reporter.add_rows(committed)
+    reporter.add_rows(committed - last_reported)
 
     stop_event.set()
     for t in workers:
@@ -579,8 +581,6 @@ def _flush_profile_batch(conn, profile_batch, error_batch, reporter):
                 "UPDATE actors SET error_count=error_count+1, last_error=? WHERE did=?",
                 (err_type, did),
             )
-            if reporter:
-                reporter.add_error(err_type or "unknown")
     conn.commit()
 
 
@@ -657,6 +657,12 @@ def phase_crawl_follows(conn: sqlite3.Connection, args):
 
     did_queue = queue.Queue(maxsize=50_000)
 
+    workers = []
+    for _ in range(args.workers):
+        t = threading.Thread(target=worker, daemon=True)
+        t.start()
+        workers.append(t)
+
     cursor_offset = 0
     batch_size_dids = 5000
     while not stop_event.is_set():
@@ -670,12 +676,6 @@ def phase_crawl_follows(conn: sqlite3.Connection, args):
         for d in dids:
             did_queue.put(d)
         cursor_offset += batch_size_dids
-
-    workers = []
-    for _ in range(args.workers):
-        t = threading.Thread(target=worker, daemon=True)
-        t.start()
-        workers.append(t)
 
     def get_q_depth():
         return result_queue.qsize()
@@ -692,6 +692,7 @@ def phase_crawl_follows(conn: sqlite3.Connection, args):
     error_batch = []
     done_actors = 0
     total_edges = 0
+    last_reported_edges = 0
     last_batch_report = 0
 
     try:
@@ -725,7 +726,8 @@ def phase_crawl_follows(conn: sqlite3.Connection, args):
 
             if len(edge_batch) >= BATCH_COMMIT_SIZE or len(done_batch) >= BATCH_COMMIT_SIZE:
                 _flush_follow_batch(conn, edge_batch, ghost_batch, done_batch, error_batch)
-                reporter.add_rows(total_edges)
+                reporter.add_rows(total_edges - last_reported_edges)
+                last_reported_edges = total_edges
                 if total_edges - last_batch_report >= BATCH_COMMIT_SIZE:
                     print(
                         f"  [batch] {done_actors:,} actors done, {total_edges:,} edges",
@@ -743,7 +745,7 @@ def phase_crawl_follows(conn: sqlite3.Connection, args):
 
     if edge_batch or ghost_batch or done_batch or error_batch:
         _flush_follow_batch(conn, edge_batch, ghost_batch, done_batch, error_batch)
-    reporter.add_rows(total_edges)
+    reporter.add_rows(total_edges - last_reported_edges)
 
     stop_event.set()
     for t in workers:
