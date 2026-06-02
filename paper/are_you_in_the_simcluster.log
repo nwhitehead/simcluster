@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.3.31)  30 MAY 2026 21:17
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.3.31)  2 JUN 2026 14:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -742,7 +742,7 @@ Package caption Info: End \AtBeginDocument code.
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf/fonts/enc/
 dvips/cm-super/cm-super-ts1.enc}] [2]
-<figures/figA3_tiers_concentric.pdf, id=115, 523.28299pt x 562.85893pt>
+<figures/figA3_tiers_concentric.pdf, id=114, 523.28299pt x 562.85893pt>
 File: figures/figA3_tiers_concentric.pdf Graphic file (type pdf)
 <use figures/figA3_tiers_concentric.pdf>
 Package pdftex.def Info: figures/figA3_tiers_concentric.pdf  used on input line
@@ -750,14 +750,14 @@ Package pdftex.def Info: figures/figA3_tiers_concentric.pdf  used on input line
 (pdftex.def)             Requested size: 294.42636pt x 316.69325pt.
  [3 <./figures/figA3_tiers_concentric.pdf>]
 [4]
-<figures/figA1_membership_funnel.pdf, id=224, 491.436pt x 346.69022pt>
+<figures/figA1_membership_funnel.pdf, id=223, 491.436pt x 346.69022pt>
 File: figures/figA1_membership_funnel.pdf Graphic file (type pdf)
 <use figures/figA1_membership_funnel.pdf>
 Package pdftex.def Info: figures/figA1_membership_funnel.pdf  used on input lin
 e 134.
 (pdftex.def)             Requested size: 385.02547pt x 271.63399pt.
  [5 <./figures/figA1_membership_funnel.pdf>] [6]
-<figures/figA4_score_sketch.pdf, id=336, 563.7844pt x 311.5073pt>
+<figures/figA4_score_sketch.pdf, id=335, 563.7844pt x 311.5073pt>
 File: figures/figA4_score_sketch.pdf Graphic file (type pdf)
 <use figures/figA4_score_sketch.pdf>
 Package pdftex.def Info: figures/figA4_score_sketch.pdf  used on input line 218
@@ -774,11 +774,11 @@ ed.
 (rerunfilecheck)             Checksum: A43A49D3D1D3048C01710548513C9376;2562.
  ) 
 Here is how much of TeX's memory you used:
- 22887 strings out of 474222
- 432189 string characters out of 5748733
- 1938975 words of memory out of 5000000
+ 22886 strings out of 474222
+ 432182 string characters out of 5748733
+ 1939975 words of memory out of 5000000
  44721 multiletter control sequences out of 15000+600000
- 569408 words of font info for 76 fonts, out of 8000000 for 9000
+ 569239 words of font info for 75 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,11n,87p,1152b,588s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
@@ -795,15 +795,14 @@ m/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10
 usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/sh
 are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb></usr/share/tex
 live/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texlive/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb></usr/share/texlive/texmf-d
-ist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/share/texmf/fonts/type1/publ
-ic/cm-super/sfrm0600.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0800
-.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0900.pfb></usr/share/tex
-mf/fonts/type1/public/cm-super/sfrm1095.pfb>
-Output written on are_you_in_the_simcluster.pdf (9 pages, 332014 bytes).
+exmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/share/texmf/fonts/type
+1/public/cm-super/sfrm0600.pfb></usr/share/texmf/fonts/type1/public/cm-super/sf
+rm0800.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0900.pfb></usr/sha
+re/texmf/fonts/type1/public/cm-super/sfrm1095.pfb>
+Output written on are_you_in_the_simcluster.pdf (9 pages, 344669 bytes).
 PDF statistics:
- 554 PDF objects out of 1000 (max. 8388607)
- 301 compressed objects within 4 object streams
+ 548 PDF objects out of 1000 (max. 8388607)
+ 298 compressed objects within 3 object streams
  66 named destinations out of 1000 (max. 500000)
  140 words of extra memory for PDF output out of 10000 (max. 10000000)
 
