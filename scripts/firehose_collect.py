@@ -447,6 +447,8 @@ class DispatcherThread:
 
 
 class ProfileWorker:
+    IDLE_EXIT_SECONDS = 10
+
     def __init__(self, did_queue: queue.Queue, write_queue: queue.Queue,
                  rate_limiter: RateLimiter, backoff: SharedBackoff,
                  stop_event: threading.Event, reporter: ProgressReporter,
@@ -470,6 +472,7 @@ class ProfileWorker:
     def _run(self):
         with self.active_lock:
             self.active_count[0] += 1
+        idle_since: float | None = None
         try:
             while not self.stop_event.is_set():
                 batch_dids = []
@@ -483,8 +486,15 @@ class ProfileWorker:
                 if not batch_dids:
                     if self.stop_event.is_set():
                         break
+                    now = time.monotonic()
+                    if idle_since is None:
+                        idle_since = now
+                    elif now - idle_since >= self.IDLE_EXIT_SECONDS:
+                        break
                     self.stop_event.wait(timeout=0.5)
                     continue
+
+                idle_since = None
 
                 actors_param = "&actors=".join(batch_dids)
                 url = f"{PUBLIC_API}/app.bsky.actor.getProfiles?actors={actors_param}"
@@ -783,25 +793,14 @@ def main():
 
     db_writer.flush()
 
-    while not stop_event.is_set():
-        unprofiled = conn.execute(
-            "SELECT COUNT(*) FROM users WHERE profiled_at IS NULL AND error_count < ?",
-            (ERROR_SKIP_THRESHOLD,),
-        ).fetchone()[0]
-        with active_lock:
-            num_active = active_workers[0]
-        if unprofiled == 0 and num_active == 0 and did_queue.empty() and write_queue.empty():
-            break
-        stop_event.wait(timeout=5)
+    for w in workers:
+        w.join(timeout=120)
+    print("  [shutdown] workers stopped", file=sys.stderr)
 
     stop_event.set()
 
     dispatcher.join(timeout=10)
     print("  [shutdown] dispatcher stopped", file=sys.stderr)
-
-    for w in workers:
-        w.join(timeout=60)
-    print("  [shutdown] workers stopped", file=sys.stderr)
 
     db_writer.join(timeout=30)
     print("  [shutdown] db_writer stopped", file=sys.stderr)
