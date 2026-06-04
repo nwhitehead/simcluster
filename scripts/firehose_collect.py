@@ -786,6 +786,11 @@ def main():
         if not firehose.done_event.is_set():
             print(f"  --duration ({args.duration}s) reached, stopping firehose", file=sys.stderr)
             firehose.done_event.set()
+    else:
+        while not stop_event.is_set() and not firehose.done_event.is_set():
+            stop_event.wait(timeout=1)
+        if not firehose.done_event.is_set():
+            firehose.done_event.set()
 
     firehose.join(timeout=30)
     firehose.save_final_cursor()
