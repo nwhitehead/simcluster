@@ -1,173 +1,138 @@
-# Bingo Card Generator — Plan
+# Bingo Card Creator — Plan
 
 ## Overview
-New script `scripts/make_bingo.py` that scans a directory of images, picks a random subset,
-and composites them into a 5x5 PNG grid with optional title and optional X marks. Fits the
-repo's existing CLI-script pattern (cf. `check_membership.py`, `firehose_collect.py`).
+A standalone single-file HTML page at `web/bingo.html` that lets a user build a bingo card from Bluesky posts. No build step, no server. Talks directly to the Bluesky public API at `public.api.bsky.app`, which supports CORS for browser-side fetches.
 
-## CLI Surface
+Lives here as a side project / piece of repo performance art, unrelated to the rest of the analysis code.
 
-```
-python scripts/make_bingo.py <image_dir> [options]
+## UI Layout
+- **Title bar**: editable text input at the top of the page (default value `BINGO`).
+- **Mode badge**: shows the current click mode + a one-line hint describing what clicking will do.
+- **Toolbar**: contains a **Shuffle all** button and a small keyboard cheat-sheet.
+- **5×5 grid** of square cells. The center cell is pre-rendered as a **FREE** space and counts as already marked.
+- **Status line**: per-cell loading spinners and transient error messages.
 
-Positional:
-  image_dir                Directory to scan for images
+## Click Modes (single-letter keyboard toggles)
+| Key | Mode    | Behavior on filled cell                            | On blank cell        |
+|-----|---------|-----------------------------------------------------|----------------------|
+| F   | Fill    | No-op                                               | Open handle-entry modal |
+| T   | Toggle  | Add/remove big X overlay                            | No-op                |
+| E   | Erase   | Clear cell back to blank                            | No-op                |
+| R   | Repick  | Re-fetch + pick a different random post from handle | No-op                |
 
-Options:
-  --title TEXT             Title text rendered above the grid (default: none)
-  --title-font PATH        TTF/OTF file for title. REQUIRED if --title is given
-                           (PIL's default bitmap font ignores --title-size and
-                           will produce a tiny unreadable title).
-  --title-size N           Title font size in px (default: 64)
-  --title-color COLOR      Title color (default: black)
-  --center-image PATH      Image to place in center cell (row 2, col 2)
-  --seed N                 RNG seed for reproducible output
-  --mark-x ROW,COL         Mark a square with an X. Repeatable. 0-indexed.
-                           Safe to combine with --center-image on the same cell;
-                           X is drawn on top of the pasted center image.
-  --x-color COLOR          Color of the X marks (default: red)
-  --x-width N              Stroke width of X marks in px (default: 12)
-  --cell-size N            Px size of each square cell (default: 200)
-  --padding N              Px padding around grid + between cells (default: 8)
-  --background COLOR       Background color (default: white)
-  --grid-line COLOR        Color of grid lines (default: black)
-  --output PATH            Output PNG path (default: bingo_card.png)
-  --exts .jpg,.png,...     Comma-sep list of allowed extensions
-                           (default: .jpg,.jpeg,.png,.gif,.webp,.bmp;
-                           case-insensitive; leading dot required)
-  --quiet                  Suppress summary output
+- `F` is the default mode at startup.
+- The active mode is reflected in the badge and changes the cell cursor style for clarity.
 
-Directory scanning is non-recursive (top level of <image_dir> only).
+## Cell Data Model
+```js
+{
+  handle, did,
+  postUri, postCid,        // used by Repick to avoid picking the same post twice
+  type: "text" | "image",
+  text,                    // short phrase, if type === "text"
+  imageUrl,                // CDN URL, if type === "image"
+  marked: false            // big X overlay
+}
 ```
 
-Color args accept any PIL-recognized string: `"red"`, `"#FF0000"`, `"rgb(255,0,0)"`, etc.
+## Handle-Entry Modal
+An in-page modal (not the browser's native `prompt()`) opens when a blank cell is clicked in Fill mode. It contains:
+- A text input for the bsky handle.
+- Submit and Cancel buttons.
+- Closes on Enter (submit) or Escape (cancel).
 
-## Decisions Resolved
-- **No BINGO column letters** — no header row, no side markers; just the grid + optional title
-- **X coordinates**: 0-indexed `row,col` pairs, repeatable flag; drawn last (on top of pasted
-  images, grid lines, and center image)
-- **Center square**: random image by default; only replaced if `--center-image` set. When set,
-  24 images are sampled and placed at positions `[0..11, 13..24]`; position 12 is reserved for
-  the center image (so no random image is "wasted" by being overwritten).
-- **Library**: Pillow (PIL). New top-level dependency; add to README `## Requirements` line.
-- **Canvas mode**: `RGB`. All source images converted via `Image.convert("RGB")` after EXIF
-  transpose, so PNGs with alpha channels composite correctly onto the background.
-- **EXIF orientation**: always call `ImageOps.exif_transpose(img)` after `Image.open`, so
-  phone-camera JPEGs render upright.
-- **Title font**: `--title-font` is required when `--title` is given. PIL's `load_default()`
-  ignores `--title-size` and would produce unreadable output; rejecting the combination is
-  cleaner than silently rendering a 10px title.
-- **Title strip sizing**: height and width are computed from `font.getbbox(title)` (actual
-  rendered metrics), not from `--title-size` alone. If title is wider than the grid, the strip
-  width grows to fit (canvas width = `max(grid_width, title_width + 2*padding)`); the grid is
-  centered horizontally within the wider canvas.
-- **Output**: `--output PATH`, default `bingo_card.png` in current directory
-- **No title strip** when `--title` is omitted — canvas is just the grid
-- **Image scarcity**: no duplicates; if dir has fewer than needed, use what's there and leave
-  remaining cells as blank background-colored squares with a stderr warning
-- **Directory scan**: non-recursive (`os.listdir` on `<image_dir>` only); files in subdirectories
-  are ignored. Keeps the common case simple; users with nested dirs can flatten first.
-- **README repo-structure block**: this block is already stale (missing `firehose_collect.py`
-  and `crawl_active_users.py`). Update it to reflect *all* current scripts, including
-  `make_bingo.py`, rather than appending one more line to an incomplete list.
+The modal is styled to match the card.
 
-## Implementation Outline
+## Bluesky Fetch Flow (per cell)
+1. **Get handle** from the modal input. Strip a leading `@` if present.
+2. **Resolve DID**:
+   - If input starts with `did:plc:` (or `did:web:`), use it directly.
+   - Otherwise call `GET https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle={h}`.
+3. **Fetch feed**: `GET https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor={did}&limit=50`.
+4. **Filter to original posts only**: keep entries where
+   - `reply == null` (not a reply), AND
+   - `reason == undefined` (not a repost), AND
+   - `post.author.did == did` (own post, not a quoted/reposted author).
+5. **Pick**: random index from the filtered list. If the cell already has a `postUri` (i.e. Repick), exclude that one to avoid showing the same post twice in a row. If exclusion would leave the list empty (single-post handle after filtering), just re-render the existing post.
+6. **Render** based on `post.embed`:
+   - If `embed.$type === "app.bsky.embed.images#view"` and `embed.images.length > 0` → use `images[0].thumb` (CDN URL, already square-cropped). Apply CSS `object-fit: cover` as a safety net.
+   - Otherwise (text-only post, or non-image embed) → run the **Phrase Extractor** below. If the extractor returns `null`, retry with a different random post up to **5 attempts** before showing a transient error in the cell.
 
-1. **Argparse** — flags above; `--mark-x` uses `action='append'` with a small `row,col` parser
-   (raise `argparse.ArgumentTypeError` on malformed input, range-check 0-4). Validation:
-   if `args.title` is set and `args.title_font` is None, exit with a clear error message
-   ("--title requires --title-font").
-2. **Seed** — `random.seed(args.seed)` immediately after parse (works fine when seed is None;
-   seeds from system time).
-3. **Scan directory** — `os.listdir(image_dir)`, filter by extension (case-insensitive, leading
-   dot required, against the parsed `--exts` set), sort for deterministic order before sampling
-   (so seed is meaningful across runs). Non-recursive: skip subdirectories.
-4. **Sample** — need `N` = 25 slots (24 if `--center-image` given).
-   `sample = random.sample(images, min(N, available))`. Error only if zero images found.
-   Print stderr warning if `available < N`.
-5. **Load and crop-to-square each image** — for each path, use `with Image.open(p) as img:` to
-   avoid file-descriptor leaks, then in order:
-   - `img = ImageOps.exif_transpose(img)` (apply camera orientation)
-   - `img = img.convert("RGB")` (flatten alpha onto white; ensures RGBA PNGs composite cleanly)
-   - Center-crop to square via `min(w,h)`
-   - Resize to `cell_size x cell_size` (`Image.Resampling.LANCZOS`)
-6. **Compute canvas** —
-   - Grid total = `5*cell_size + 6*padding` (padding on each outer edge + between cells).
-   - Title strip on top (only if `--title`): load font via
-     `ImageFont.truetype(args.title_font, args.title_size)`; compute rendered bbox with
-     `font.getbbox(title)`; strip height = `bbox_height + 2*padding`. If title is wider than
-     the grid, canvas width grows to fit: `canvas_w = max(grid_width, bbox_width + 2*padding)`,
-     and the grid is horizontally centered within the wider canvas.
-   - No title strip if `--title` omitted; canvas width = grid width.
-   - Canvas mode: `"RGB"`, filled with `args.background`.
-7. **Draw** —
-   - Compute paste positions for each grid index `i` (0..24):
-     `row, col = divmod(i, 5)`, then `x = grid_origin_x + padding + col*(cell_size + padding)`,
-     `y = grid_origin_y + padding + row*(cell_size + padding)` where `grid_origin_x` is the
-     horizontal centering offset when title is wider than grid.
-   - Build a list of 25 target indices: if `--center-image`, the 24 samples go to
-     `[0..11, 13..24]` and index 12 gets the center image; otherwise all 25 samples go to
-     `[0..24]`. Remaining positions (when fewer samples than slots) stay as background color.
-   - Paste each prepared cell at its target position.
-   - Draw grid lines: 6 horizontal lines + 6 vertical lines spanning the grid bounding box
-     (avoids double-thick interior lines from per-cell `rectangle` calls).
-   - Render title with `draw.text(...)`, centered horizontally in the title strip.
-   - For each `--mark-x (r,c)` (drawn last, on top of everything): compute the cell's bounding
-     box and draw two `ImageDraw.line` calls forming an X with `fill=args.x_color` and
-     `width=args.x_width`. Safe to mark the center cell when `--center-image` is set.
-8. **Save** — `img.save(args.output, "PNG")`.
-9. **Print summary** — sample count, output path, seed used (so user can reproduce). Quiet if
-   `--quiet`.
+## Phrase Extractor (text posts)
+1. Take `post.record.text`.
+2. Strip: handles (`/@[\w.-]+/g`), bare URLs (`/https?:\/\/\S+/g`), leading hashtags (`/^#\w+\s+/`).
+3. Split on sentence boundaries: `/[\.\!\?\n]+/`.
+4. Filter clauses to those with **4–12 words** and **≤80 chars**.
+5. Prefer the shortest matching clause. If multiple have the same length, take the first.
+6. If no clauses match, return `null` (caller will repick).
+7. Final result is trimmed and used as the cell's `text`. CSS handles wrapping via `word-break: break-word`.
 
-## Conventions to Match
-- `#!/usr/bin/env python3` shebang
-- Module docstring at top with usage examples (cf. `check_membership.py:1-14`)
-- Use stdlib where possible (`os`, `argparse`, `random`, `pathlib`, `sys`); only external dep =
-  `Pillow`
-- CLI argument parsing via `argparse` (cf. `firehose_collect.py:694-724` — *not*
-  `check_membership.py`, which does manual `sys.argv` parsing)
-- Update `scripts/README.md` with a new `## make_bingo.py` section (cf. the `firehose_collect.py`
-  section's structure: Quick Start → How It Works → CLI Arguments table)
-- Update top-level `README.md`:
-  - Refresh the repository-structure block so it lists **all** current scripts (the block is
-    already missing `firehose_collect.py` and `crawl_active_users.py`)
-  - Add `Pillow` to the `## Requirements` install line
+## Visual / Styling
+- Responsive square grid via `display: grid; grid-template-columns: repeat(5, 1fr)` with `aspect-ratio: 1` on each cell.
+- **Blank cells**: faint `+` centered, hover highlight.
+- **Text cells**: centered, padded, `word-break: break-word`, clamped font size for long phrases.
+- **Image cells**: `<img>` with `object-fit: cover; width:100%; height:100%`.
+- **Marked state**: a pseudo-element overlay drawing a thick diagonal `X` in a contrasting color, with a slight desaturate filter on the underlying content.
+- **FREE cell**: rendered as already-marked with the word `FREE` instead of an X.
+- **Mode badge**: small color-coded pill in the top-right of the page.
+- **Per-cell spinner**: small CSS spinner while a fetch is in flight.
 
-## Files to Add/Modify
-| File | Change |
-|------|--------|
-| `scripts/make_bingo.py` | New — main script |
-| `scripts/README.md` | Add `## make_bingo.py` section |
-| `README.md` | Refresh repository-structure block (all scripts); add `Pillow` to Requirements |
+## BINGO Detection
+After every Toggle that changes a cell's `marked` state, check the 12 possible winning lines on the 5×5 grid (5 rows, 5 columns, 2 diagonals). The FREE center cell counts as marked.
 
-## Out of Scope (could add later)
-- Non-square output aspect ratio
-- Multiple cards in one batch
-- Title subtitle / footer
-- Per-cell captions
-- JPEG/WebP output (PNG only for now)
+When one or more complete lines exist:
+- All cells on a completed winning line switch to a **winning** visual state: the X overlay scales up (roughly 1.2–1.5×), gains a soft colored `drop-shadow` glow, and the underlying content gets a slightly stronger desaturate.
+- Multiple simultaneous winning lines stack visually (a cell on two winning lines still gets one winning state, not two stacked glows).
+- State is purely derived from `marked` + position; no extra field on the cell. Recompute on every toggle.
+- No celebratory animation, sound, or modal — the visual upgrade is the whole signal.
+
+When a Toggle un-marks a cell and breaks the line, the winning state drops immediately.
+
+## Toolbar: "Shuffle all"
+- Iterates over every filled non-FREE cell and triggers a Repick in parallel.
+- Disabled while any fetch is in flight, to avoid hammering the API.
+
+## Error Handling
+- Handle-resolution failure (404 / `null` DID) → transient "handle not found" message in the cell, then revert to blank.
+- HTTP 429 or 5xx from Bluesky → transient "rate limited, retry later" message, cell reverts to blank.
+- Network failure → same path as 429.
+- All transient messages auto-clear after ~3 seconds.
+
+## Out of Scope (explicitly excluded)
+- No PNG export.
+- No shareable URL state encoding.
+- No dark-mode toggle.
+- No grid-size selector (fixed at 5×5).
+
+## Implementation Order
+1. Skeleton HTML + grid CSS + editable title.
+2. Cell rendering, click handling, mode system + keyboard listener + badge.
+3. In-page handle-entry modal.
+4. Bluesky fetch (resolve handle → feed → filter → pick).
+5. Text rendering + phrase extractor.
+6. Image rendering.
+7. Mark/toggle/erase/repick behaviors.
+8. Shuffle-all button.
+9. Error handling + transient messages.
+10. BINGO detection (winning-line computation + winning X styling).
+11. Polish (spinner, hover states, font sizing).
 
 ## Verification Plan
-1. Create a temp dir with ~30 sample images (`/tmp/opencode/bingo_test/`). Include a mix of
-   aspect ratios (square, wide, tall) and at least one RGBA PNG with transparency.
-2. Run basic: `python scripts/make_bingo.py /tmp/opencode/bingo_test/` -> check `bingo_card.png`
-   exists, opens, is 5x5.
-3. Run with title + seed: `--title "TEST" --title-font <path> --seed 42` -> verify reproducible
-   (rerun -> same pixels).
-4. Run with `--mark-x 0,0 --mark-x 2,2 --x-color blue` -> verify X marks visible at correct cells.
-5. Run with `--center-image <path>` -> verify center is replaced, only 24 random images used,
-   and position 24 (bottom-right) is NOT blank.
-6. Run with too-few images (e.g. 10 in dir) -> verify warning printed and blank cells appear.
-7. Run with bad `--mark-x 5,5` -> verify clean argparse error.
-8. Run with `--title "Hello"` but no `--title-font` -> verify clean error message refusing to
-   render with PIL default font.
-9. Run with a non-square source image -> verify center-crop produces a square cell (no distortion).
-10. Run with `--mark-x 2,2 --center-image <path>` together -> verify X is drawn on top of the
-    center image.
-11. Run with an empty directory -> verify clean error (no images found).
-12. Run with a directory containing non-image files (e.g. `.txt`, subdirectory) -> verify they
-    are skipped silently and don't break the run.
-13. Run with a camera JPEG that has EXIF orientation set -> verify image renders upright
-    (not rotated/mirrored).
-14. Run with a PNG that has an alpha channel -> verify it composites onto the background
-    cleanly (no black boxes where transparent pixels were).
+1. Load the page → 5×5 grid renders, title bar shows `BINGO`, center cell shows `FREE` and is treated as marked, all other cells are blank with a `+`.
+2. Press each mode key (`F`, `T`, `E`, `R`) → badge updates, cursor on cells changes to match.
+3. Fill mode + click blank cell → modal opens, focus in input, Escape closes without effect, typing handle + Enter submits.
+4. Submit a known-good handle (e.g. `bsky.app`) → cell populates with a phrase or image; spinner shows during fetch; cell data records `handle`, `did`, `postUri`, `postCid`.
+5. Submit a `did:plc:…` directly → skips resolveHandle, populates cell.
+6. Submit a nonexistent handle (e.g. `nope-no-such-user-xyzzy.bsky.social`) → cell shows transient "handle not found" message and reverts to blank after ~3s.
+7. Submit a handle with only replies in its first 50 posts → after up to 5 attempts the cell shows a transient error and reverts to blank.
+8. Toggle mode + click filled cell → X overlay appears. Toggle again → X disappears. Behavior is independent for each cell.
+9. Erase mode + click filled cell → cell reverts to blank, cell data cleared.
+10. Repick mode + click filled cell → re-fetches, different post appears (verify postUri changed).
+11. Repick on a handle that produced only one valid post → cell re-renders the same post (no error, no empty state).
+12. Fill 24 cells with various handles, mark 5 in a row → all 5 cells on that row shift to the winning X state (bigger, glowing). Un-mark one → winning state drops immediately.
+13. Mark both diagonals including FREE → both diagonals show winning state simultaneously.
+14. Click "Shuffle all" with 24 filled cells → all 24 re-fetch; button disabled until all complete; no cell is left in a half-updated state if a fetch fails mid-shuffle.
+15. Open in a mobile-width viewport → grid stays square, cells remain tappable, mode badge readable. (Keyboard mode shortcuts unavailable on touch is acceptable for now.)
+16. Rapid-fire click: open Fill modal on cell A, then before submitting click cell B in another mode → modal should not stack; either cell A's modal closes or cell B's click is ignored.
+17. Network panel during Shuffle-all → requests are visible; verify they go to `public.api.bsky.app` and that no credentials/cookies are sent.
+18. Reload the page → state is lost (expected, given Out of Scope). Verify clean re-init.
