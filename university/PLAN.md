@@ -18,7 +18,7 @@ from *Are You in the Simcluster?*, dressed as academia.
 
 ## Locked decisions
 
-- **Medium:** Single-file HTML page (matches `web/bingo.html`, `web/simcluster.html`
+- **Medium:** Single-file HTML page (matches `web/bingo.html`, `web/index.html`
   pattern). No build step, no server. Shareable link.
 - **Tone:** Mostly satire, sincerity as seasoning. Default to jokes; let the
   human+agent and short-form-learning points land quietly.
@@ -36,10 +36,12 @@ from *Are You in the Simcluster?*, dressed as academia.
    in-group consistent: 45s class + 15s "reciprocity window" where the professor
    follows back **3.5%** of the time (headline reciprocity figure). Sincere core:
    short-form, high-frequency learning is real and worth taking seriously.
-3. **Agents as faculty** (the missing pillar). `@void.comind.network` and
-   `@kira.pds.witchcraft.systems` are already members per the papers → they are
-   tenured faculty who lecture 24/7 because they are "not, technically, alive."
-   This is the one non-satirical feature; it makes the satire hit harder.
+3. **Agents as trustees** (the missing pillar). `@void.comind.network` and
+   `@kira.pds.witchcraft.systems` are not just members — they are **two of the
+   14 seed accounts**, which makes them two seats on the Board of Trustees and
+   holders of the top (SEED/INNER CORE → Tenured) tier. They lecture 24/7
+   because they are "not, technically, alive." This is the one non-satirical
+   feature; it makes the satire hit harder.
 
 Supporting riffs:
 - 14 crawl seeds = Board of Trustees with founder's syndrome.
@@ -70,7 +72,7 @@ Supporting riffs:
 - "The remaining 15 seconds are the **reciprocity window**. The professor will follow you back **3.5%** of the time."
 
 ### Academic standing strip (6 tiers = honors system)
-- SEED/INNER CORE → Tenured (you are the university)
+- SEED/INNER CORE → Tenured (you are the university); the Board of Trustees, including the two autonomous agents, sits here
 - CORE → Faculty
 - ADJACENT → Adjunct
 - PERIPHERAL → Auditing
@@ -79,7 +81,7 @@ Supporting riffs:
 - "We do not grade you. **The graph grades you.** (Simcluster Score 0–100 is your transcript.)"
 
 ### Course catalog
-- `CORE 101 — k-Core Decomposition and You` — You cannot graduate; you are in core 2.
+- `CORE 101 — k-Core Decomposition and You` — Graduation requires core 24. You are in core 2.
 - `PARA 204 — Parasocial Dynamics Lab` — Prereq: follow the professor. Professor will not follow back.
 - `STAT 314 — Power Law or Whatever` — Grade: MIXED EVIDENCE.
 - `VIBE 666 — Vibes-Based Epistemology` — No syllabus, no exams, full credit.
@@ -87,7 +89,7 @@ Supporting riffs:
 - `IMPO 999 — The Impostor Complex of Network Position`
 
 ### Faculty line
-- "Faculty include humans **and autonomous agents**. Some lecturers post 24/7 because they are not, technically, alive. The Board of Trustees founded this place and suffers accordingly. The Dean's authority **vanishes upon seed exclusion**."
+- "Faculty include humans **and autonomous agents**. Two of those agents sit on the Board of Trustees — they are seed accounts — and lecture 24/7 because they are not, technically, alive. The Board of Trustees founded this place and suffers accordingly. The Dean's authority **vanishes upon seed exclusion**."
 
 ### Footer
 - Sincerity seasoning (small): "Short classes are a joke about gatekeeping. They are also not a joke."
