@@ -94,10 +94,7 @@
 
   #grid {
     display: grid;
-    gap: 2px;
-    background: var(--border);
-    padding: 2px;
-    border-radius: 6px;
+    gap: 0;
     width: 100%;
     aspect-ratio: 1 / 1;
   }
@@ -105,8 +102,9 @@
   .tile {
     background-image: url('TLhoriz.png');
     /* Image is 1920x283. Each tile is 283x283. Scaling so 283 image-px = cell width
-       means bg width = 1920/283 of the cell = 678.445%. */
-    background-size: 678.445% 100%;
+       means bg width = 1920/283 of the cell = 678.445%. We add a tiny overshoot
+       (cell+1px) to avoid sub-pixel seams between adjacent tiles. */
+    background-size: calc(678.445% + 1px) calc(100% + 1px);
     background-repeat: no-repeat;
     aspect-ratio: 1 / 1;
   }
