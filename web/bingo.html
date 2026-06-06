@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bingo</title>
+<style>
+  :root {
+    --grid-bg: #f5f3ec;
+    --cell-bg: #ffffff;
+    --grid-line: #1f1f1f;
+    --blank-plus: #c8c4ba;
+    --text-color: #1a1a1a;
+    --muted: #777;
+    --x-color: #c11818;
+    --win-glow: #ffd24a;
+    --primary: #2a6df4;
+    --error: #b00020;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background: var(--grid-bg);
+    color: var(--text-color);
+  }
+
+  body {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  /* ---- Top bar ---- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  #title {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    border: none;
+    background: transparent;
+    flex: 1 1 auto;
+    min-width: 120px;
+    outline: none;
+    padding: 4px 6px;
+    border-bottom: 2px dotted transparent;
+  }
+  #title:focus { border-bottom-color: var(--muted); }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    color: white;
+    background: #555;
+    white-space: nowrap;
+  }
+  .badge .hint {
+    font-weight: 400;
+    margin-left: 8px;
+    opacity: 0.9;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .badge.mode-F { background: var(--primary); }
+  .badge.mode-T { background: #2c8a3e; }
+  .badge.mode-E { background: #b00020; }
+  .badge.mode-R { background: #d97706; }
+
+  /* ---- Toolbar ---- */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+
+  #shuffle {
+    padding: 6px 14px;
+    border: 1px solid var(--grid-line);
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  #shuffle:hover:not(:disabled) { background: var(--grid-bg); }
+  #shuffle:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .cheat { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  /* ---- Grid ---- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    background: var(--grid-line);
+    padding: 6px;
+    border: 3px solid var(--grid-line);
+    border-radius: 4px;
+  }
+
+  .cell {
+    position: relative;
+    aspect-ratio: 1;
+    background: var(--cell-bg);
+    overflow: hidden;
+    user-select: none;
+    cursor: default;
+  }
+  .cell.clickable { cursor: pointer; }
+  .cell.mode-T.clickable { cursor: crosshair; }
+  .cell.mode-E.clickable { cursor: not-allowed; }
+  .cell.mode-R.clickable { cursor: alias; }
+  .cell.mode-F.clickable { cursor: cell; }
+
+  .content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    font-size: clamp(10px, 1.7vw, 15px);
+    line-height: 1.2;
+    text-align: center;
+    word-break: break-word;
+    overflow: hidden;
+    transition: filter 0.2s, transform 0.2s;
+  }
+
+  .cell.image .content { padding: 0; }
+  .cell.image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .cell.blank .content::before {
+    content: '+';
+    color: var(--blank-plus);
+    font-size: clamp(20px, 3vw, 32px);
+    font-weight: 300;
+  }
+  .cell.blank.clickable:hover .content::before { color: var(--muted); }
+
+  .cell.free .content {
+    font-weight: 800;
+    font-size: clamp(14px, 2.6vw, 22px);
+    letter-spacing: 2px;
+    color: var(--muted);
+    background: #ece8dc;
+  }
+
+  /* ---- Marked X overlay (non-free only) ---- */
+  .cell.marked:not(.free)::before {
+    content: '';
+    position: absolute;
+    inset: 4%;
+    pointer-events: none;
+    background:
+      linear-gradient(45deg,
+        transparent calc(50% - 4px),
+        var(--x-color) calc(50% - 3px),
+        var(--x-color) calc(50% + 3px),
+        transparent calc(50% + 4px)),
+      linear-gradient(-45deg,
+        transparent calc(50% - 4px),
+        var(--x-color) calc(50% - 3px),
+        var(--x-color) calc(50% + 3px),
+        transparent calc(50% + 4px));
+    transition: transform 0.15s ease-out, filter 0.2s;
+  }
+
+  .cell.marked .content { filter: saturate(0.4); }
+  .cell.winning:not(.free) .content { filter: saturate(0.2); }
+
+  .cell.winning:not(.free)::before {
+    transform: scale(1.35);
+    filter: drop-shadow(0 0 6px var(--win-glow)) drop-shadow(0 0 12px var(--win-glow));
+  }
+
+  .cell.winning.free .content {
+    transform: scale(1.12);
+    filter: drop-shadow(0 0 6px var(--win-glow)) drop-shadow(0 0 12px var(--win-glow));
+  }
+
+  /* ---- Spinner ---- */
+  .spinner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.55);
+    pointer-events: none;
+  }
+  .spinner::after {
+    content: '';
+    width: 22px;
+    height: 22px;
+    border: 3px solid #ddd;
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---- Error overlay ---- */
+  .error {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--error);
+    font-size: clamp(9px, 1.3vw, 11px);
+    text-align: center;
+    pointer-events: none;
+    line-height: 1.2;
+  }
+
+  /* ---- Modal ---- */
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  .modal.hidden { display: none; }
+  .modal-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: min(90vw, 360px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+  .modal-card h2 {
+    margin: 0 0 12px;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .modal-card input {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+  .modal-card input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  .modal-buttons button {
+    padding: 6px 16px;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .modal-buttons .primary {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  .modal-buttons button:hover { opacity: 0.9; }
+
+  @media (max-width: 480px) {
+    body { padding: 8px; }
+    #title { font-size: 22px; letter-spacing: 2px; }
+    .toolbar { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .badge .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <input id="title" value="BINGO" maxlength="32" spellcheck="false" aria-label="Card title">
+    <div id="badge" class="badge mode-F">
+      <span class="name">Fill</span><span class="hint">click blank to add</span>
+    </div>
+  </div>
+  <div class="toolbar">
+    <button id="shuffle">Shuffle all</button>
+    <span class="cheat">F Fill · T Toggle · E Erase · R Repick</span>
+  </div>
+  <div id="grid" class="grid"></div>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-label="Bluesky handle">
+      <h2>Bluesky handle</h2>
+      <input id="handle-input" placeholder="e.g. bsky.app or did:plc:..." autocomplete="off" spellcheck="false">
+      <div class="modal-buttons">
+        <button id="modal-cancel">Cancel</button>
+        <button id="modal-submit" class="primary">Fill</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+'use strict';
+
+const API_BASE = 'https://public.api.bsky.app/xrpc';
+const FREE_INDEX = 12;
+const MAX_PHRASE_ATTEMPTS = 5;
+const ERROR_DURATION_MS = 3000;
+
+const LINES = [
+  [0,1,2,3,4], [5,6,7,8,9], [10,11,12,13,14], [15,16,17,18,19], [20,21,22,23,24],
+  [0,5,10,15,20], [1,6,11,16,21], [2,7,12,17,22], [3,8,13,18,23], [4,9,14,19,24],
+  [0,6,12,18,24], [4,8,12,16,20]
+];
+
+const MODES = {
+  F: { name: 'Fill',   hint: 'click blank to add' },
+  T: { name: 'Toggle', hint: 'click cell to X' },
+  E: { name: 'Erase',  hint: 'click cell to clear' },
+  R: { name: 'Repick', hint: 'click cell for new post' }
+};
+
+class StaleError extends Error { constructor() { super('stale'); } }
+
+function emptyCell() {
+  return {
+    handle: null, did: null,
+    postUri: null, postCid: null,
+    type: 'blank',
+    text: null, imageUrl: null,
+    marked: false,
+    loading: false,
+    error: null,
+    fetchToken: null
+  };
+}
+
+const state = {
+  mode: 'F',
+  cells: Array.from({ length: 25 }, emptyCell)
+};
+state.cells[FREE_INDEX] = Object.assign(emptyCell(), { type: 'free', marked: true });
+
+// ---- DOM refs ----
+const gridEl = document.getElementById('grid');
+const badgeEl = document.getElementById('badge');
+const shuffleBtn = document.getElementById('shuffle');
+const modalEl = document.getElementById('modal');
+const handleInput = document.getElementById('handle-input');
+const modalSubmit = document.getElementById('modal-submit');
+const modalCancel = document.getElementById('modal-cancel');
+
+let pendingModalIdx = null;
+let preModalFocus = null;
+
+// Build cell elements once
+const cellEls = state.cells.map((_, i) => {
+  const el = document.createElement('div');
+  el.dataset.idx = i;
+  el.innerHTML = '<div class="content"></div>';
+  el.addEventListener('click', () => onCellClick(i));
+  gridEl.appendChild(el);
+  return el;
+});
+
+// ---- Helpers ----
+function isStale(idx, myToken) {
+  return state.cells[idx].fetchToken !== myToken;
+}
+
+function getWinningCells() {
+  const winning = new Set();
+  for (const line of LINES) {
+    if (line.every(i => state.cells[i].marked)) {
+      for (const i of line) winning.add(i);
+    }
+  }
+  return winning;
+}
+
+// ---- Render ----
+let winningSet = new Set();
+
+function render() {
+  // Badge
+  const m = MODES[state.mode];
+  badgeEl.className = 'badge mode-' + state.mode;
+  badgeEl.querySelector('.name').textContent = m.name;
+  badgeEl.querySelector('.hint').textContent = m.hint;
+
+  // Shuffle disabled while any cell is loading
+  shuffleBtn.disabled = state.cells.some(c => c.loading);
+
+  // Winning lines (recomputed every render)
+  winningSet = getWinningCells();
+
+  for (let i = 0; i < 25; i++) renderCell(i);
+}
+
+function renderCell(i) {
+  const cell = state.cells[i];
+  const el = cellEls[i];
+
+  // Class assembly
+  const winning = winningSet.has(i);
+  let cls = 'cell mode-' + state.mode + ' ' + cell.type;
+  if (cell.marked) cls += ' marked';
+  if (winning) cls += ' winning';
+  const canClick = (
+    (state.mode === 'F' && cell.type === 'blank') ||
+    (state.mode !== 'F' && cell.type !== 'blank' && cell.type !== 'free')
+  );
+  if (canClick) cls += ' clickable';
+  el.className = cls;
+
+  // Content
+  const content = el.firstElementChild;
+  content.innerHTML = '';
+  if (cell.type === 'free') {
+    content.textContent = 'FREE';
+  } else if (cell.type === 'text') {
+    content.textContent = cell.text || '';
+  } else if (cell.type === 'image' && cell.imageUrl) {
+    const img = document.createElement('img');
+    img.src = cell.imageUrl;
+    img.alt = '';
+    img.loading = 'lazy';
+    content.appendChild(img);
+  }
+
+  // Spinner / error overlays
+  el.querySelectorAll('.spinner, .error').forEach(n => n.remove());
+  if (cell.loading) {
+    const s = document.createElement('div');
+    s.className = 'spinner';
+    el.appendChild(s);
+  }
+  if (cell.error) {
+    const e = document.createElement('div');
+    e.className = 'error';
+    e.textContent = cell.error;
+    el.appendChild(e);
+  }
+}
+
+// ---- Cell click dispatch ----
+function onCellClick(i) {
+  if (!modalEl.classList.contains('hidden')) return;
+  const cell = state.cells[i];
+  if (cell.type === 'free') return;
+
+  switch (state.mode) {
+    case 'F':
+      if (cell.type === 'blank') openModal(i);
+      break;
+    case 'T':
+      if (cell.type !== 'blank') {
+        cell.marked = !cell.marked;
+        render();
+      }
+      break;
+    case 'E':
+      if (cell.type !== 'blank') {
+        // Invalidate any in-flight fetch by replacing the cell entirely
+        state.cells[i] = emptyCell();
+        render();
+      }
+      break;
+    case 'R':
+      if (cell.type !== 'blank' && cell.handle) {
+        refillCell(i, cell.handle);
+      }
+      break;
+  }
+}
+
+// ---- Modal ----
+function openModal(idx) {
+  pendingModalIdx = idx;
+  preModalFocus = document.activeElement;
+  modalEl.classList.remove('hidden');
+  handleInput.value = '';
+  // Slight delay so the focus lands after the un-hide
+  setTimeout(() => handleInput.focus(), 0);
+}
+
+function closeModal() {
+  modalEl.classList.add('hidden');
+  pendingModalIdx = null;
+  if (preModalFocus && typeof preModalFocus.focus === 'function') {
+    preModalFocus.focus();
+  }
+}
+
+function submitModal() {
+  const idx = pendingModalIdx;
+  const raw = handleInput.value.trim();
+  if (!raw || idx === null) { closeModal(); return; }
+  const handle = raw.replace(/^@/, '');
+  closeModal();
+  refillCell(idx, handle);
+}
+
+modalSubmit.addEventListener('click', submitModal);
+modalCancel.addEventListener('click', closeModal);
+handleInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); submitModal(); }
+  else if (e.key === 'Escape') { e.preventDefault(); closeModal(); }
+});
+modalEl.addEventListener('click', (e) => {
+  if (e.target === modalEl) closeModal();
+});
+
+// ---- Mode keyboard ----
+document.addEventListener('keydown', (e) => {
+  const tag = (e.target.tagName || '').toUpperCase();
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key.toUpperCase();
+  if (MODES[k]) {
+    state.mode = k;
+    render();
+  }
+});
+
+// ---- Shuffle all ----
+shuffleBtn.addEventListener('click', () => {
+  if (shuffleBtn.disabled) return;
+  for (let i = 0; i < 25; i++) {
+    if (i === FREE_INDEX) continue;
+    const c = state.cells[i];
+    if (c.type !== 'blank' && c.handle) {
+      refillCell(i, c.handle);
+    }
+  }
+});
+
+// ---- Bluesky fetch ----
+function refillCell(idx, handle) {
+  const wasBlank = state.cells[idx].type === 'blank';
+  const myToken = Symbol();
+
+  const cell = state.cells[idx];
+  cell.fetchToken = myToken;
+  cell.loading = true;
+  cell.error = null;
+  cell.handle = handle;
+  render();
+
+  resolveActor(handle)
+    .then(did => {
+      if (isStale(idx, myToken)) throw new StaleError();
+      state.cells[idx].did = did;
+      return fetchFeed(did);
+    })
+    .then(feed => {
+      if (isStale(idx, myToken)) throw new StaleError();
+      return pickAndRender(idx, feed, myToken);
+    })
+    .then(() => {
+      if (isStale(idx, myToken)) return;
+      const c = state.cells[idx];
+      c.loading = false;
+      c.fetchToken = null;
+      render();
+    })
+    .catch(err => {
+      if (err instanceof StaleError) return;
+      if (isStale(idx, myToken)) return;
+      const c = state.cells[idx];
+      c.loading = false;
+      c.fetchToken = null;
+      if (wasBlank) {
+        state.cells[idx] = emptyCell();
+      }
+      showError(idx, friendlyError(err));
+    });
+}
+
+async function resolveActor(input) {
+  if (input.startsWith('did:plc:') || input.startsWith('did:web:')) {
+    return input;
+  }
+  const url = API_BASE + '/com.atproto.identity.resolveHandle?handle=' + encodeURIComponent(input);
+  let r;
+  try {
+    r = await fetch(url);
+  } catch (e) {
+    throw new Error('network');
+  }
+  if (r.status === 404) throw new Error('handle not found');
+  if (r.status === 429 || r.status >= 500) throw new Error('rate limited');
+  if (!r.ok) throw new Error('resolve http ' + r.status);
+  const data = await r.json();
+  if (!data.did) throw new Error('handle not found');
+  return data.did;
+}
+
+async function fetchFeed(did) {
+  const url = API_BASE + '/app.bsky.feed.getAuthorFeed?actor=' + encodeURIComponent(did) + '&limit=50';
+  let r;
+  try {
+    r = await fetch(url);
+  } catch (e) {
+    throw new Error('network');
+  }
+  if (r.status === 429 || r.status >= 500) throw new Error('rate limited');
+  if (!r.ok) throw new Error('feed http ' + r.status);
+  const data = await r.json();
+  return data.feed || [];
+}
+
+function filterOriginalPosts(feed, did) {
+  const out = [];
+  for (const item of feed) {
+    if (item.reply != null) continue;
+    if (item.reason != null) continue;
+    if (!item.post) continue;
+    if (item.post.author?.did !== did) continue;
+    out.push(item.post);
+  }
+  return out;
+}
+
+async function pickAndRender(idx, feed, myToken) {
+  const cell = state.cells[idx];
+  const filtered = filterOriginalPosts(feed, cell.did);
+  if (filtered.length === 0) throw new Error('no original posts');
+
+  // Exclude the existing post on Repick; if that empties the list (single-post handle),
+  // fall back to the full filtered list and re-render the same post.
+  const excludeUri = cell.postUri;
+  let candidates = filtered;
+  if (excludeUri) {
+    const without = filtered.filter(p => p.uri !== excludeUri);
+    if (without.length > 0) candidates = without;
+  }
+
+  const tried = new Set();
+  for (let attempt = 0; attempt < MAX_PHRASE_ATTEMPTS; attempt++) {
+    if (isStale(idx, myToken)) throw new StaleError();
+    if (tried.size >= candidates.length) break;
+
+    let pick;
+    do {
+      pick = candidates[Math.floor(Math.random() * candidates.length)];
+    } while (tried.has(pick.uri));
+    tried.add(pick.uri);
+
+    const rendered = renderableFromPost(pick);
+    if (rendered) {
+      const c = state.cells[idx];
+      if (isStale(idx, myToken)) throw new StaleError();
+      c.type = rendered.type;
+      c.text = rendered.text || null;
+      c.imageUrl = rendered.imageUrl || null;
+      c.postUri = pick.uri;
+      c.postCid = pick.cid;
+      c.marked = false;
+      return;
+    }
+  }
+  throw new Error('no usable phrase');
+}
+
+function renderableFromPost(post) {
+  const embed = post.embed;
+  if (embed &&
+      embed.$type === 'app.bsky.embed.images#view' &&
+      Array.isArray(embed.images) &&
+      embed.images.length > 0 &&
+      embed.images[0].thumb) {
+    return { type: 'image', imageUrl: embed.images[0].thumb };
+  }
+  const text = post.record?.text || '';
+  const phrase = extractPhrase(text);
+  if (!phrase) return null;
+  return { type: 'text', text: phrase };
+}
+
+function extractPhrase(text) {
+  if (!text) return null;
+  let s = text;
+  s = s.replace(/@[\w.-]+/g, '');        // strip handles (leading @ included in match)
+  s = s.replace(/https?:\/\/\S+/g, '');  // strip bare URLs
+  s = s.replace(/^#\w+\s+/, '');         // strip leading hashtag
+  const clauses = s.split(/[\.\!\?\n]+/).map(c => c.trim()).filter(c => c.length > 0);
+  const good = clauses.filter(c => {
+    const words = c.split(/\s+/).filter(w => w.length > 0);
+    return words.length >= 4 && words.length <= 12 && c.length <= 80;
+  });
+  if (good.length === 0) return null;
+  // Shortest first; stable on ties (first occurrence wins)
+  let best = good[0];
+  for (let i = 1; i < good.length; i++) {
+    if (good[i].length < best.length) best = good[i];
+  }
+  return best.trim();
+}
+
+// ---- Errors ----
+function friendlyError(err) {
+  const m = (err && err.message || '').toLowerCase();
+  if (m.includes('handle not found')) return 'handle not found';
+  if (m.includes('rate limited') || m.includes('429')) return 'rate limited, retry later';
+  if (m.includes('network') || m.includes('failed to fetch')) return 'network error';
+  if (m.includes('no original posts')) return 'no original posts';
+  if (m.includes('no usable phrase')) return 'no usable phrase';
+  if (m.includes('http')) return 'service error';
+  return 'error';
+}
+
+function showError(idx, msg) {
+  const cell = state.cells[idx];
+  cell.error = msg;
+  render();
+  setTimeout(() => {
+    if (cell.error === msg) {
+      cell.error = null;
+      render();
+    }
+  }, ERROR_DURATION_MS);
+}
+
+// ---- Init ----
+render();
+</script>
+</body>
+</html>
