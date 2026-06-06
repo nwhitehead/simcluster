@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tile Grid</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    color: #f0f6fc;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .controls .label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-right: 0.3rem;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 0.85rem;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.35rem 0.75rem;
+    cursor: pointer;
+    transition: background 120ms, border-color 120ms, color 120ms;
+  }
+
+  button:hover {
+    border-color: var(--accent);
+    color: #f0f6fc;
+  }
+
+  button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0d1117;
+    font-weight: 700;
+  }
+
+  .spacer { flex: 1; }
+
+  #reshuffle {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  #grid {
+    display: grid;
+    gap: 2px;
+    background: var(--border);
+    padding: 2px;
+    border-radius: 6px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+  }
+
+  .tile {
+    background-image: url('TLhoriz.png');
+    /* Image is 1920x283. Each tile is 283x283. Scaling so 283 image-px = cell width
+       means bg width = 1920/283 of the cell = 678.445%. */
+    background-size: 678.445% 100%;
+    background-repeat: no-repeat;
+    aspect-ratio: 1 / 1;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tile Grid</h1>
+    <p class="subtitle">Each cell is one of the 5 tiles from TLhoriz.png, chosen at random.</p>
+
+    <div class="controls">
+      <span class="label">Size:</span>
+      <button data-n="5">5×5</button>
+      <button data-n="9">9×9</button>
+      <button data-n="15" class="active">15×15</button>
+      <button data-n="21">21×21</button>
+      <button data-n="49">49×49</button>
+      <span class="spacer"></span>
+      <button id="reshuffle">Reshuffle</button>
+    </div>
+
+    <div id="grid"></div>
+  </div>
+
+<script>
+  // TLhoriz.png: 1920x283. Five 283x283 tiles with 112px transparent spacers
+  // between them (and a 28px left margin). Left edges of each tile:
+  const TILE_OFFSETS = [28, 423, 818, 1214, 1609];
+  const TILE_COUNT = TILE_OFFSETS.length;
+  const IMG_WIDTH = 1920;
+  const TILE_SIZE = 283;
+  // background-position-x percentage: shift = offset / (IMG_WIDTH - TILE_SIZE)
+  const TILE_POS = TILE_OFFSETS.map(x => (x * 100) / (IMG_WIDTH - TILE_SIZE));
+
+  const grid = document.getElementById('grid');
+  const reshuffleBtn = document.getElementById('reshuffle');
+  let currentN = 15;
+
+  function render(n) {
+    currentN = n;
+    grid.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+    grid.style.gridTemplateRows = `repeat(${n}, 1fr)`;
+    const cells = n * n;
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < cells; i++) {
+      const tile = Math.floor(Math.random() * TILE_COUNT);
+      const div = document.createElement('div');
+      div.className = 'tile';
+      div.style.backgroundPosition = `${TILE_POS[tile]}% 0`;
+      frag.appendChild(div);
+    }
+    grid.replaceChildren(frag);
+  }
+
+  document.querySelectorAll('button[data-n]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('button[data-n]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render(parseInt(btn.dataset.n, 10));
+    });
+  });
+
+  reshuffleBtn.addEventListener('click', () => render(currentN));
+
+  render(currentN);
+</script>
+</body>
+</html>
