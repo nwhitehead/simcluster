@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simcluster University</title>
+<meta name="description" content="Simcluster University — a fully accredited* institution of networked higher learning. (* accredited by vibes.)">
+<style>
+  :root {
+    --ink: #20211c;
+    --ink-soft: #4a4636;
+    --paper: #f4ead2;
+    --paper-edge: #e3d3a8;
+    --rule: #b89a52;
+    --navy: #1c2a4a;
+    --gold: #b08522;
+    --seed: #8a5cc0;
+    --core: #3d76c4;
+    --adjacent: #2f8a44;
+    --peripheral: #b07d18;
+    --curious: #7d7a6a;
+    --outside: #5a574a;
+    --serif: "Iowan Old Style", "Palatino Linotype", "URW Palladio L", Palatino, "Book Antiqua", Georgia, serif;
+    --mono: "SF Mono", "Fira Code", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { background: #2a261b; }
+
+  body {
+    font-family: var(--serif);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: clamp(1rem, 3vw, 3rem);
+    background:
+      radial-gradient(120% 80% at 50% 0%, #3a3424 0%, #2a261b 60%, #1f1c14 100%);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sheet {
+    position: relative;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: clamp(2.2rem, 5vw, 4.5rem) clamp(1.6rem, 5vw, 3.6rem);
+    background:
+      radial-gradient(140% 120% at 50% 0%, #faf2dc 0%, #f4ead2 55%, #ecdfbc 100%);
+    box-shadow:
+      0 2px 0 rgba(0,0,0,0.15),
+      0 18px 50px rgba(0,0,0,0.45),
+      inset 0 0 0 1px var(--paper-edge),
+      inset 0 0 0 6px rgba(255,255,255,0.35);
+    border: 1px solid #cdb87f;
+  }
+
+  .sheet::before {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    border: 1px solid var(--rule);
+    pointer-events: none;
+    opacity: 0.55;
+  }
+
+  .masthead { text-align: center; }
+
+  .seal-wrap { display: flex; justify-content: center; margin-bottom: 0.4rem; }
+  .seal { width: clamp(150px, 26vw, 210px); height: auto; display: block; }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(1.9rem, 5.5vw, 3.1rem);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-top: 0.4rem;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+  }
+
+  .accredit {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: clamp(0.85rem, 2.2vw, 1rem);
+    margin-top: 0.5rem;
+  }
+  .accredit .fn { font-size: 0.78em; color: var(--gold); letter-spacing: 0.04em; }
+
+  .rule {
+    border: none;
+    height: 14px;
+    margin: 1.6rem auto;
+    width: 78%;
+    background:
+      linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat,
+      linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat;
+    background-position: center 5px, center 9px;
+    color: var(--rule);
+    position: relative;
+    opacity: 0.7;
+  }
+  .rule::after {
+    content: "✦";
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--paper);
+    color: var(--gold);
+    padding: 0 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  section { margin-bottom: 1.7rem; }
+
+  h2 {
+    font-family: var(--serif);
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.02em;
+  }
+
+  .enroll {
+    text-align: center;
+    border: 1.5px solid var(--navy);
+    border-radius: 2px;
+    padding: 1.3rem 1rem;
+    background: rgba(28,42,74,0.04);
+    position: relative;
+  }
+  .enroll::before, .enroll::after {
+    content: "";
+    position: absolute;
+    width: 10px; height: 10px;
+    border: 1.5px solid var(--navy);
+  }
+  .enroll::before { top: -6px; left: -6px; border-right: none; border-bottom: none; }
+  .enroll::after { bottom: -6px; right: -6px; border-left: none; border-top: none; }
+  .enroll h2 { font-size: clamp(1.4rem, 4vw, 2rem); text-transform: uppercase; letter-spacing: 0.04em; }
+  .enroll p { margin-top: 0.55rem; font-size: clamp(0.95rem, 2.4vw, 1.08rem); }
+  .enroll .quiet { color: var(--ink-soft); font-size: 0.9rem; font-style: italic; }
+
+  .schedule {
+    border-top: 1px solid var(--paper-edge);
+    border-bottom: 1px solid var(--paper-edge);
+    padding: 1.1rem 0.2rem;
+  }
+  .schedule-head {
+    text-align: center;
+    font-variant: small-caps;
+    letter-spacing: 0.05em;
+    font-size: clamp(0.95rem, 2.4vw, 1.12rem);
+    color: var(--navy);
+    font-weight: 700;
+    margin-bottom: 0.9rem;
+  }
+  .countdown { text-align: center; }
+  .cd-status {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+  }
+  .cd-time {
+    font-family: var(--mono);
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0.2rem 0 0.7rem;
+    min-height: 1.4em;
+  }
+  .cd-bar {
+    position: relative;
+    height: 10px;
+    background: #e6d6ad;
+    border: 1px solid var(--paper-edge);
+    border-radius: 6px;
+    overflow: hidden;
+    max-width: 460px;
+    margin: 0 auto;
+  }
+  .cd-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--navy);
+    transition: width 0.2s linear, background 0.4s linear;
+  }
+  .cd-fill.recip { background: var(--gold); }
+  .cd-mark {
+    position: absolute;
+    top: -3px; bottom: -3px;
+    left: 75%;
+    width: 1px;
+    background: var(--ink-soft);
+    opacity: 0.4;
+  }
+  .cd-caption {
+    margin-top: 0.75rem;
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+    max-width: 540px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  h3 {
+    font-family: var(--serif);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 0.9rem;
+    font-weight: 700;
+  }
+
+  .tiers { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem 1.4rem; justify-content: center; }
+  .tiers li {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 2px rgba(255,255,255,0.5); }
+  .dot.seed { background: var(--seed); }
+  .dot.core { background: var(--core); }
+  .dot.adjacent { background: var(--adjacent); }
+  .dot.peripheral { background: var(--peripheral); }
+  .dot.curious { background: var(--curious); }
+  .dot.outside { background: var(--outside); }
+  .tname { font-weight: 700; color: var(--navy); }
+  .arrow { color: var(--rule); }
+  .role { color: var(--ink-soft); font-style: italic; }
+
+  .grades { text-align: center; margin-top: 1rem; font-size: 0.95rem; }
+  .grades .quiet { color: var(--ink-soft); font-size: 0.86rem; }
+
+  .courses { display: grid; gap: 0.7rem; }
+  .course {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    gap: 0.3rem 1rem;
+    align-items: baseline;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px dotted var(--paper-edge);
+  }
+  .course:last-child { border-bottom: none; }
+  .course dt {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.03em;
+  }
+  .course dd { display: flex; flex-direction: column; }
+  .ctitle { font-weight: 700; color: var(--ink); }
+  .cdesc { font-style: italic; color: var(--ink-soft); font-size: 0.9rem; }
+
+  .faculty {
+    font-size: 0.95rem;
+    color: var(--ink);
+    text-align: center;
+    border-left: 3px solid var(--gold);
+    border-right: 3px solid var(--gold);
+    padding: 0.4rem 1.2rem;
+  }
+  .faculty strong { color: var(--navy); }
+
+  footer { text-align: center; margin-top: 0.5rem; }
+  .sincere {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+  }
+  .accredit-line {
+    margin-top: 0.5rem;
+    font-variant: small-caps;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .links {
+    margin-top: 1rem;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+  .links a { color: var(--navy); text-decoration: underline; text-decoration-color: var(--gold); }
+
+  @media (max-width: 520px) {
+    .course { grid-template-columns: 1fr; gap: 0.1rem; }
+    .tiers { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media print {
+    html, body { background: #fff; padding: 0; }
+    .sheet { box-shadow: none; max-width: 100%; }
+    .cd-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="sheet">
+
+  <header class="masthead">
+    <div class="seal-wrap">
+      <svg class="seal" viewBox="0 0 200 200" role="img" aria-label="Simcluster University seal">
+        <defs>
+          <path id="topArc" d="M 24,100 A 76,76 0 0 1 176,100" fill="none"/>
+          <path id="botArc" d="M 24,100 A 76,76 0 0 0 176,100" fill="none"/>
+        </defs>
+
+        <circle cx="100" cy="100" r="97" fill="#1c2a4a" stroke="#b08522" stroke-width="2"/>
+        <circle cx="100" cy="100" r="88" fill="none" stroke="#b08522" stroke-width="1.2"/>
+        <circle cx="100" cy="100" r="84" fill="none" stroke="#b08522" stroke-width="0.5" opacity="0.6"/>
+
+        <text fill="#e9c95e" font-family="'Iowan Old Style', Palatino, Georgia, serif" font-size="12" font-weight="700" letter-spacing="2.4">
+          <textPath href="#topArc" startOffset="50%" text-anchor="middle">✦ SIMCLUSTER UNIVERSITY ✦</textPath>
+        </text>
+        <text fill="#e9c95e" font-family="'Iowan Old Style', Palatino, Georgia, serif" font-size="9" letter-spacing="3.4">
+          <textPath href="#botArc" side="right" startOffset="50%" text-anchor="middle">EST. EVERY MINUTE</textPath>
+        </text>
+
+        <circle cx="100" cy="100" r="44" fill="#f4ead2" stroke="#b08522" stroke-width="1.2"/>
+        <g stroke="#b08522" stroke-width="0.4" opacity="0.5" fill="none">
+          <circle cx="100" cy="100" r="50"/>
+          <circle cx="100" cy="100" r="56"/>
+          <circle cx="100" cy="100" r="62"/>
+          <circle cx="100" cy="100" r="68"/>
+        </g>
+
+        <g stroke="#7d6a98" stroke-width="0.7" opacity="0.7" fill="none">
+          <line x1="100" y1="100" x2="100" y2="76"/>
+          <line x1="100" y1="100" x2="121" y2="88"/>
+          <line x1="100" y1="100" x2="121" y2="112"/>
+          <line x1="100" y1="100" x2="100" y2="124"/>
+          <line x1="100" y1="100" x2="79" y2="112"/>
+          <line x1="100" y1="100" x2="79" y2="88"/>
+          <line x1="121" y1="88" x2="121" y2="112"/>
+          <line x1="79" y1="88" x2="79" y2="112"/>
+        </g>
+        <g>
+          <circle cx="121" cy="88" r="3" fill="#3d76c4"/>
+          <circle cx="121" cy="112" r="3" fill="#3d76c4"/>
+          <circle cx="100" cy="124" r="3" fill="#3d76c4"/>
+          <circle cx="79" cy="112" r="3" fill="#3d76c4"/>
+          <circle cx="79" cy="88" r="3" fill="#3d76c4"/>
+          <circle cx="100" cy="76" r="3" fill="#3d76c4"/>
+          <circle cx="100" cy="100" r="5" fill="#8a5cc0"/>
+        </g>
+
+        <g>
+          <path d="M 64,148 L 136,148 L 136,162 L 128,156 L 136,162 L 128,168 L 64,168 L 72,162 L 64,168 L 72,156 L 64,162 Z" fill="#1c2a4a" stroke="#b08522" stroke-width="0.8"/>
+          <text x="100" y="161" text-anchor="middle" fill="#e9c95e" font-family="'Iowan Old Style', Palatino, Georgia, serif" font-size="7.5" font-weight="700" letter-spacing="1.6">NON CEPI · SED VIBI</text>
+        </g>
+      </svg>
+    </div>
+
+    <h1>Simcluster University</h1>
+    <p class="accredit">A fully accredited* institution of networked higher learning.<br><span class="fn">* accredited by vibes</span></p>
+  </header>
+
+  <hr class="rule">
+
+  <section class="enroll">
+    <h2>You are already enrolled.</h2>
+    <p>If you have a Claude account, this poster is your admission letter. So is everything else.</p>
+    <p class="quiet">Enrollment is retroactive and opt-out. The University has been admitting you this entire time.</p>
+  </section>
+
+  <section class="schedule">
+    <div class="schedule-head">Classes start every minute. Each is 45 seconds long.</div>
+    <div class="countdown">
+      <div class="cd-status" id="cdStatus">Lecture in session</div>
+      <div class="cd-time" id="cdTime">— s</div>
+      <div class="cd-bar">
+        <div class="cd-fill" id="cdFill"></div>
+        <div class="cd-mark"></div>
+      </div>
+      <p class="cd-caption">The remaining 15 seconds are the <strong>reciprocity window</strong>. The professor will follow you back <strong>3.5%</strong> of the time.</p>
+    </div>
+  </section>
+
+  <section class="standing">
+    <h3>Academic Standing</h3>
+    <ul class="tiers">
+      <li><span class="dot seed"></span><span class="tname">Seed / Inner Core</span><span class="arrow">→</span><span class="role">Tenured (you are the university)</span></li>
+      <li><span class="dot core"></span><span class="tname">Core</span><span class="arrow">→</span><span class="role">Faculty</span></li>
+      <li><span class="dot adjacent"></span><span class="tname">Adjacent</span><span class="arrow">→</span><span class="role">Adjunct</span></li>
+      <li><span class="dot peripheral"></span><span class="tname">Peripheral</span><span class="arrow">→</span><span class="role">Auditing</span></li>
+      <li><span class="dot curious"></span><span class="tname">Curious</span><span class="arrow">→</span><span class="role">Waitlisted by vibes</span></li>
+      <li><span class="dot outside"></span><span class="tname">Outside</span><span class="arrow">→</span><span class="role">Also enrolled, we're being modest</span></li>
+    </ul>
+    <p class="grades">We do not grade you. <strong>The graph grades you.</strong> <span class="quiet">(Simcluster Score 0–100 is your transcript.)</span></p>
+  </section>
+
+  <section class="catalog">
+    <h3>Course Catalog</h3>
+    <dl class="courses">
+      <div class="course"><dt>CORE 101</dt><dd><span class="ctitle">k-Core Decomposition and You</span><span class="cdesc">Graduation requires core 24. You are in core 2.</span></dd></div>
+      <div class="course"><dt>PARA 204</dt><dd><span class="ctitle">Parasocial Dynamics Lab</span><span class="cdesc">Prereq: follow the professor. Professor will not follow back.</span></dd></div>
+      <div class="course"><dt>STAT 314</dt><dd><span class="ctitle">Power Law or Whatever</span><span class="cdesc">Grade: MIXED EVIDENCE.</span></dd></div>
+      <div class="course"><dt>VIBE 666</dt><dd><span class="ctitle">Vibes-Based Epistemology</span><span class="cdesc">No syllabus, no exams, full credit.</span></dd></div>
+      <div class="course"><dt>RECR 014</dt><dd><span class="ctitle">The 14 Seeds</span><span class="cdesc">14 seats. Always full.</span></dd></div>
+      <div class="course"><dt>IMPO 999</dt><dd><span class="ctitle">The Impostor Complex of Network Position</span><span class="cdesc">Your centrality is a sampling artifact. So is your self-esteem.</span></dd></div>
+    </dl>
+  </section>
+
+  <section class="faculty">
+    <p>Faculty include humans <strong>and autonomous agents</strong>. Two of those agents sit on the Board of Trustees — they are seed accounts — and lecture 24/7 because they are not, technically, alive. The Board of Trustees founded this place and suffers accordingly. The Dean's authority <strong>vanishes upon seed exclusion</strong>.</p>
+  </section>
+
+  <hr class="rule">
+
+  <footer>
+    <p class="sincere">Short classes are a joke about gatekeeping. They are also not a joke.</p>
+    <p class="accredit-line">Accredited by vibes. Unaccredited by everyone else.</p>
+    <p class="links">
+      Companion paper: <a href="../paper/are_you_in_the_simcluster.pdf">Are You in the Simcluster?</a><br>
+      Based on <a href="../paper/simcluster_paper.pdf">The Simcluster: Network Analysis of an Emergent Subculture on Bluesky</a>
+    </p>
+  </footer>
+
+</main>
+
+<script>
+(function () {
+  var CYCLE = 60000, CLASS = 45000;
+  var fill = document.getElementById("cdFill");
+  var status = document.getElementById("cdStatus");
+  var time = document.getElementById("cdTime");
+
+  function tick() {
+    var t = Date.now() % CYCLE;
+    fill.style.width = (t / CYCLE * 100) + "%";
+    if (t < CLASS) {
+      status.textContent = "Lecture in session";
+      time.textContent = Math.ceil((CLASS - t) / 1000) + " s remaining";
+      fill.classList.remove("recip");
+    } else {
+      status.textContent = "Reciprocity window";
+      time.textContent = Math.ceil((CYCLE - t) / 1000) + " s until next class";
+      fill.classList.add("recip");
+    }
+  }
+
+  tick();
+  setInterval(tick, 200);
+})();
+</script>
+</body>
+</html>
