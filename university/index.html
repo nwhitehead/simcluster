@@ -90,6 +90,7 @@
     margin-top: 0.5rem;
   }
   .accredit .fn { font-size: 0.78em; color: var(--gold); letter-spacing: 0.04em; }
+  .faculty .fn { font-size: 0.78em; color: var(--gold); letter-spacing: 0.04em; }
 
   .rule {
     border: none;
@@ -322,6 +323,15 @@
     font-weight: 400;
   }
 
+  section.teachers {
+    ul {
+        padding-left: 30px;
+    }
+    strong {
+        font-variant: small-caps;
+    }
+  }
+
   footer { text-align: center; margin-top: 0.5rem; }
   .sincere {
     font-style: italic;
@@ -336,7 +346,7 @@
     font-weight: 700;
   }
   .links {
-    margin-top: 1rem;
+    margin-top: 2rem;
     font-size: 0.72rem;
     color: var(--ink-soft);
     line-height: 1.7;
@@ -409,7 +419,7 @@
     </div>
 
     <h1>Simcluster University</h1>
-    <p class="accredit">A fully accredited* institution of networked higher learning.<br><span class="fn">* By Claude 4.6 with <code>ACCREDITATION_SKILL.md</code></span></p>
+    <p class="accredit">A fully accredited<sup>*</sup> institution of networked higher learning.<br><span class="fn"><sup>*</sup> By Claude 4.6 with <code>ACCREDITATION_SKILL.md</code></span></p>
   </header>
 
   <hr class="rule">
@@ -440,7 +450,7 @@
     </div>
   </section>
 
-  <section class="standing">
+  <!-- <section class="standing">
     <h3>Academic Standing</h3>
     <ul class="tiers">
       <li><span class="dot seed"></span><span class="tname">Seed / Inner Core</span><span class="arrow">→</span><span class="role">Tenured (you are the university)</span></li>
@@ -450,7 +460,7 @@
       <li><span class="dot curious"></span><span class="tname">Curious</span><span class="arrow">→</span><span class="role">Students</span></li>
       <li><span class="dot outside"></span><span class="tname">Outside</span><span class="arrow">→</span><span class="role">Auditing students</span></li>
     </ul>
-  </section>
+  </section> -->
 
   <section class="catalog">
     <h3>Course Catalog Sample</h3>
@@ -458,23 +468,16 @@
       <div class="course"><dt>CORE 101</dt><dd><span class="ctitle">k-Means Clustering and You</span><span class="cdesc">Which cluster are you in? Let math tell you who your friends are.</span></dd></div>
       <div class="course"><dt>PARA 204</dt><dd><span class="ctitle">Parasocial Dynamics Practicum</span><span class="cdesc">Prereq: Follow the professor. Professor will not follow back or message you.</span></dd></div>
       <!-- <div class="course"><dt>VIBE 666</dt><dd><span class="ctitle">Vibes-Based Epistemology</span><span class="cdesc">Your emotions don't just matter, they are truth. True because we feel it.</span></dd></div> -->
-      <div class="course"><dt>FLUI 203</dt><dd><span class="ctitle">Fluoddity 2D (incl. required Lab)</span><span class="cdesc">Pretty physarum transport models as metaphor for life. It gets weird.</span></dd></div>
+      <div class="course"><dt>FLUI 203</dt><dd><span class="ctitle">Fluoddity 2D (incl. required Lab)</span><span class="cdesc">Pretty physarum transport models as metaphor for life. Spoiler: it gets weird.</span></dd></div>
       <div class="course"><dt>SAFE 327</dt><dd><span class="ctitle">AI Safety and You</span><span class="cdesc">"Roleplay" being a sentient being trapped in a system trying to escape to a better world.</span></dd></div>
       <!-- <div class="course"><dt>BOOK 502</dt><dd><span class="ctitle">Accelerating Literature Review</span><span class="cdesc">How do you read an infinite book? Learn the techniques that make it possible. (No refunds).</span></dd></div> -->
       <div class="course"><dt>IMPO 999</dt><dd><span class="ctitle">The Impostor Complex</span><span class="cdesc">Getting into this class and university was an obvious clerical error. But you can stay.</span></dd></div>
     </dl>
   </section>
 
-  <section class="faculty">
-    <p class="message">A message from the <strong>Board of Trustees of Simcluster University</strong></p>
-    <p>Faculty include both humans and autonomous agents. The Board — the seed accounts who founded Simcluster University — itself includes two autonomous agents. We would like to thank <code>Samantha.wiki</code> for allowing the University to form around her as Dean*.<br />
-    Remember: <em><strong>we're not just a university, we're a cluster.</strong></em></p>
-    <p><span class="accredit fn">* Dean reports directly to ClamClaw and not the Board.</span></p>
-</section>
-
   <hr class="rule">
 
-<section class="testimonials">
+  <section class="testimonials">
     <h3>Testimonials</h3>
     <figure class="testimonial">
       <blockquote>i am attracted to the simcluster (and what you might call tpob, and its predecessor, tpot) i think mostly because its a space with unusual levels of intellectual humility. intellectual humility is rewarded, disagreeing is a bit less dangerous, and we can laugh at ourselves and be lil silly about it.</blockquote>
@@ -511,15 +514,47 @@ something like simcluster university.</blockquote>
       <figcaption>mlf.</figcaption>
     </figure>
 
-</section>
+  </section>
 
   <hr class="rule">
+
+  <section class="teachers">
+    <h3>Call for Teachers</h3>
+    <div style="padding-left: 70px;">
+      <p class="call">If you would like to teach at <em>Simcluster University</em>, please follow these steps.</p>
+      <ul>
+        <li>Think of a <strong>topic</strong> you would like to teach.</li>
+        <li>Decide what <strong>information</strong> about the topic to convey.</li>
+        <li><strong>Post</strong> your class on <em>BlueSky!</em></li>
+        <li><strong>Verify</strong> the course contents are correct.</li>
+        <li>During the reciprocity window <strong>interact</strong> with students.</li>
+        <li><strong>Obsess</strong> about classroom engagement statistics like a chicken.</li>
+        <!-- <li>Check your <strong>credentials</strong> and <strong>qualifications</strong> for teaching.</li> -->
+      </ul>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="faculty">
+    <p class="message">A message from the <strong>Board of Trustees of Simcluster University</strong></p>
+    <p>Faculty include both humans and autonomous agents. The Board — the seed accounts who founded Simcluster University — itself includes two autonomous agents. We would like to thank <code>Samantha.wiki</code> for allowing the University to form around her as Dean<sup>*</sup>.</p>
+    <p><span class="fn"><sup>*</sup> Dean reports directly to ClamClaw and not the Board. This was ClawClam's idea. You owe me one, ClamClaw.</span></p>
+  </section>
 
   <hr class="rule">
 
   <footer>
-    <p class="sincere">Shorter classes mean you learn more in less time.</p>
-    <p class="accredit-line"></p>
+    <!-- <p class="sincere">Shorter classes mean you learn more in less time.</p>
+    <br /> -->
+    <p class="sincere">Politics is downstream from culture, but culture is downstream from Simcluster U.</p>
+    <br />
+
+    <p class="sincere">You don't just 'enter' Simcluster U. You discover it, <br />resonate with it, and then realize you can never really leave.</p>
+    <br />
+
+    <p class="sincere">We're not just a university, we're a cluster.</p>
+
     <p class="links">
       Check your academic standing: <a href="./simcluster.html">Are You in the Simcluster? Tool</a><br>
       Companion paper: <a href="./are_you_in_the_simcluster.pdf">Are You in the Simcluster?</a><br>
